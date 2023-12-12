@@ -38,7 +38,7 @@
   <control-panel></control-panel>
   <two-columns>
 
-    <lnsy-edit id="lnsy_edit" file-path="index.md"></lnsy-edit>
+    <lnsy-edit id="lnsy_edit" file-id="index"></lnsy-edit>
     <div id="result_div" style="padding:1em"></div>
   </two-columns>
 
@@ -119,6 +119,8 @@
     }
 
 
+
+
     // What happens when the window first loads
     window.addEventListener('load', async function(){
       // get the URL Values, use it to load a file
@@ -133,6 +135,15 @@
       }
     });
 
+    router_component.addEventListener('paramsChanged', async (e) => {
+      const params = e.detail.params;
+      if(params["file-id"]){
+        const loaded_file = await loadFile(params["file-id"]);
+        lnsy_edit.loadMarkdown(loaded_file);
+        const markdown = lnsy_edit.getContent();
+        renderMarkdown(markdown);
+      }
+    })
 
     // // router_component.addEventListener('hashChanged', (e) => {
     // //   console.log(e.detail);

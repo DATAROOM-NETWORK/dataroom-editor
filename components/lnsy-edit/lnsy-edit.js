@@ -136,13 +136,7 @@ class LNSYEdit extends HTMLElement {
     let content = this.getAttribute('content');
     if(content === null){
       content = ''
-    } 
-
-    this.file_id = this.getAttribute('file-id'); 
-    if (this.file_id === null) {
-      this.file_id = crypto.randomUUID();
-      this.setAttribute('file-id', this.file_id);
-    }
+    }     
 
     this.loadData(content, metadata);
   }
@@ -164,7 +158,6 @@ class LNSYEdit extends HTMLElement {
     this.json_editor.upsertData({
       "last-updated": new Date().toISOString()
     });
-
 
     const json_data = this.json_editor.getData();
     const editor_content = this.editor.getValue();
@@ -193,10 +186,14 @@ class LNSYEdit extends HTMLElement {
       this.setAttribute('file-id', metadata["file-id"]);
     } else {
       metadata["file-id"] = this.getAttribute('file-id');
+      if(metadata["file-id"] === null){
+
+        metadata["file-id"] = crypto.randomUUID();
+      }
     }
 
     if(metadata["file-created"]){
-      this.setAttribute('file-created', metadata["file-created"])
+      this.setAttribute('file-created', metadata["file-created"]);
     } else {
       metadata["file-created"] = new Date().toISOString();
     }

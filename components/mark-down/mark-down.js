@@ -1,4 +1,4 @@
-import "//cdn.jsdelivr.net/npm/marked/marked.min.js";
+import "./vendor/marked.min.js";
 
 /*
 

@@ -1,5 +1,5 @@
 ---
-{"file-id":"index","file-created":"2023-12-12T18:12:07.311Z","last-updated":"2023-12-12T20:13:25.182Z"}
+{"file-id":"index","file-created":"2023-12-12T18:12:07.311Z","last-updated":"2023-12-12T21:53:10.724Z"}
 ---
 # DATAROOM
 
@@ -37,4 +37,3 @@ GEO_MAP_STYLE_URL= ${insert keys here}
 
 
 #generate-new-component
-

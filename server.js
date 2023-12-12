@@ -29,6 +29,8 @@ const express = require('express');  // Express.js framework for building web ap
 const app = express();              // Create an instance of the Express application
 const server = require('http').Server(app);  // Create an HTTP server using the Express app
 const path = require('path');
+const os = require('os');
+
 
 // Load environment variables from a .env file if present
 const dotenv = require("dotenv");
@@ -39,6 +41,25 @@ let PORT = process.env.PORT; // Try to get the PORT from environment variables
 if (!PORT) {
   PORT = 3000; // If PORT is not defined, default to 3000
 }
+
+// Get the local IP Address
+function getLocalIpAddress() {
+  const interfaces = os.networkInterfaces();
+  
+  // Iterate over network interfaces
+  for (const key in interfaces) {
+    for (const iface of interfaces[key]) {
+      // Check for IPv4 and skip internal and loopback addresses
+      if (iface.family === 'IPv4' && !iface.internal && iface.address !== '127.0.0.1') {
+        return iface.address;
+      }
+    }
+  }
+
+  // Return null if no suitable address is found
+  return null;
+}
+
 
 // Configure middleware to handle JSON data in requests
 app.use(express.json());
@@ -65,5 +86,7 @@ app.get('/', (req, res) => {
 
 // Start the server and listen on the specified PORT
 app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+  const ipAddress = getLocalIpAddress();
+
+  console.log(`Server listening on port ${ipAddress}/${PORT}`);
 });

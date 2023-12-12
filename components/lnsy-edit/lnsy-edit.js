@@ -201,12 +201,20 @@ class LNSYEdit extends HTMLElement {
     this.editor.setValue(content);
   }
 
+  /*
+    
+    Loads a markdown file drectly
+    Used when a file is selected
+    from the menu
+
+
+   */
   loadMarkdown(markdown){
     const metadata = parseJSONFrontmatter(markdown);
     if(metadata["file-id"]){
       this.setAttribute('file-id', metadata["file-id"]);
     } else {
-      metadata["file-id"] = this.getAttribute('file-id');
+      metadata["file-id"] = this.getAttribute("file-id");
     }
 
     Object.keys(metadata).forEach(key => {

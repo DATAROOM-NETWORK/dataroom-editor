@@ -95,6 +95,8 @@ class generateComponent extends HTMLElement {
   connectedCallback(){
     // browser calls this method when the element is added to the document
     // (can be called many times if an element is repeatedly added/removed)
+    // 
+    
     this.init();
     this.innerHTML = `
       <h1>Generate Component</h1>
@@ -110,6 +112,7 @@ class generateComponent extends HTMLElement {
   }
 
   async init(){
+
     this.form = document.createElement('form');
 
     this.addLabel('Select Template', 'template')

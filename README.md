@@ -3,9 +3,7 @@
 
 ## Overview
 
-A boilerplate for node.js projects with some helper scripts for vanilla HTML, JS and CSS projects. This project is alpha. 
-
-It also has a few helper scripts that allow you to create Elements hooked up to the server quickly. 
+Please see [index](./notebook/index.md) for more information
 
 ## Getting Started
 

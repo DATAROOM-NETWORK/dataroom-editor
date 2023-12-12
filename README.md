@@ -1,5 +1,5 @@
 # DATAROOM AUTHORING ENVIRONMENT
-![Splash](./splash.jpg)
+![Splash](./splash.png)
 
 ## Overview
 

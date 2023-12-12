@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="//unpkg.com/three"></script>
+  <script type="importmap">{ "imports": { "three": "https://unpkg.com/three/build/three.module.js" }}</script>
+
+  <script src="/index.js" type="module"></script>
+
+  <link href="/index.css" rel="stylesheet" type="text/css">
+  <style>
+
+
+    header {
+      width: 100%;
+      padding: 1em;
+      background-color: black;
+      color: white;
+    }
+    
+    #editor_route {
+      background-color: transparent;
+      color: white;
+      border: 1px solid white;
+    }
+
+    #result_div {
+      background-color: black;
+      color: white;
+    }
+  </style>
+  <title>lnsyEdit</title>
+</head>
+<body>
+
+  <router-component id="router_component"></router-component>
+  <control-panel></control-panel>
+  <two-columns>
+
+    <lnsy-edit id="lnsy_edit" file-path="index.md"></lnsy-edit>
+    <div id="result_div" style="padding:1em"></div>
+  </two-columns>
+
+
+  <script>
+
+    function renderMarkdown(content, render_dangerously = false){
+      const markdown = document.createElement('mark-down');
+      markdown.innerHTML = content;
+      result_div.innerHTML = ' ';
+      result_div.appendChild(markdown);
+      if(render_dangerously){
+        [...markdown.querySelectorAll('script')].forEach(sc => {
+          eval(sc.innerText);
+        });
+        [...document.querySelectorAll('.markdown-style')].forEach(st => st.remove());
+        [...markdown.querySelectorAll('style')].forEach(st => {
+          const styleElement = document.createElement('style');
+          styleElement.classList.add('markdown-style');
+          // Set the styles as the text content of the style element
+          styleElement.textContent = st.innerText;
+          // Append the style element to the head of the document
+          document.head.appendChild(styleElement);
+        });
+      }
+    }
+
+    function saveFile(metadata, content, markdown){
+      renderMarkdown(content);
+
+
+      return fetch('/save-file', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          metadata,
+          content: markdown,
+          "file-id": metadata["file-id"]
+        })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log(data.message); // Log the server response message
+      })
+      .catch(error => {
+        console.error('Fetch Error:', error);
+      });
+    }
+
+    function loadFile(file_id){
+      return fetch('/load-file', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ "file-id":file_id })
+      })
+      .then(response => {
+          if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+      })
+      .then(fileContent => {
+          return fileContent.content;
+      })
+      .catch(error => {
+          console.error('Fetch Error:', error);
+      });
+
+    }
+
+
+    // What happens when the window first loads
+    window.addEventListener('load', async function(){
+      // get the URL Values, use it to load a file
+      const url_values = router_component.getURLValues();
+      if(url_values["file-id"]){
+        const loaded_file = await loadFile(url_values["file-id"]);
+        lnsy_edit.loadMarkdown(loaded_file);
+        // if(url_values["render-immediately"] === true){
+          const markdown = lnsy_edit.getContent();
+          renderMarkdown(markdown);
+        // }
+      }
+    });
+
+
+    // // router_component.addEventListener('hashChanged', (e) => {
+    // //   console.log(e.detail);
+    // // })
+
+    // load_button.addEventListener('click', async (e) => {
+    //   e.preventDefault();
+    //   loadFile(editor_route.value);
+    // });
+
+    // save_button.addEventListener('click', (e) => {
+    //   e.preventDefault();
+    //   saveFile(editor_route.value, lnsy_edit.editor.getValue());
+    // })
+
+    // // Save
+    lnsy_edit.addEventListener('save', async (e) => {
+      const {metadata, content, markdown} = e.detail; 
+
+      renderMarkdown(content);
+      const res = await saveFile(metadata, content, markdown);
+      
+      const URL_values = {
+        "file-id":metadata["file-id"]
+      }
+      router_component.setURLValues(URL_values);
+    })
+      </script>
+
+
+</body>
+</html>

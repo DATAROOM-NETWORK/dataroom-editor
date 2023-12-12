@@ -10,8 +10,8 @@ lerna-debug.log*
 .keys
 
 # do not push notebook
-notebook/
-notebooks/
+# notebook/
+# notebooks/
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json

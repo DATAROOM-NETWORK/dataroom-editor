@@ -1,5 +1,5 @@
 ---
-{"file-id":"index","file-created":"2023-12-12T18:12:07.311Z","last-updated":"2023-12-12T18:46:23.848Z"}
+{"file-id":"index","file-created":"2023-12-12T18:12:07.311Z","last-updated":"2023-12-12T18:59:23.822Z"}
 ---
 # DATAROOM
 
@@ -14,15 +14,24 @@ To modify the code underpinnings you will need an external browser. LNSY likes #
 For more information, click the following hashtag on the right panel: #help
 
 
-## Some demos
+Checkout the #demos
 
 
 
-<graph-data 
-  id="258c9c46-3fe6-4548-a309-ad6efad4fa09"
->
-  [test-1]->[test-2]
-  [test-3]->[test-3]
-  [test-4]->[test-1]
-  [test-5]->[test-3]
-</graph-data>
+## Setup
+
+To properly utilize dataroom templates you need to set some variables. 
+
+With your text editor of choice create a file named *.keys* at the root of the Dataroom folder.
+
+Keys you may add: 
+
+For #geo-map the format looks like:
+
+```
+GEO_MAP_ACCESS_TOKEN= ${insert keys here}
+GEO_MAP_STYLE_URL= ${insert keys here}
+
+
+```
+

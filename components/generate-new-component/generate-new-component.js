@@ -1,4 +1,4 @@
-/*
+  /*
   generateComponent
   
   Usage: 
@@ -174,9 +174,8 @@ class generateComponent extends HTMLElement {
 
   async handleSubmit(){
     const values = getFormValues(this.form);
-    const res = this.createComponent(values); 
-
-    const dash_case_name = toDashCase(component_name);
+    const res = await this.createComponent(values); 
+    const dash_case_name = toDashCase(values.title);
 
     this.innerHTML = `
       <h1>Created a new Component:</h1>

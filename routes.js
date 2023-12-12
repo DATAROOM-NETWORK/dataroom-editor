@@ -15,4 +15,5 @@ module.exports = function(app, server) {
   const simpleModal = require('./components/simple-modal/simple-modal.route.js')(app);
 
   const controlPanel = require('./components/control-panel/control-panel.route.js')(app);
+
 }

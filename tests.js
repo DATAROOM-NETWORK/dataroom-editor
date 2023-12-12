@@ -24,6 +24,7 @@ const mocha = new Mocha({
  mocha.addFile('./components/simple-modal/simple-modal.tests.js');
 
  mocha.addFile('./components/control-panel/control-panel.tests.js');
+
 // Run the tests
 mocha.run((failures) => {
   process.exitCode = failures ? 1 : 0; // exit with non-zero status if there are failures

@@ -1,0 +1,507 @@
+---
+{
+  "date-created":"Tue Dec 12 21:33:48 2023",
+  "last-updated":"Tue Dec 12 21:34:01 2023",
+  "file-id":"file-clerk.generate-notebook-page.prompt"
+}
+---
+
+Hey Hans, 
+
+Here is an example of some tests we have: 
+
+```
+const assert = require('assert');
+const { queryChatGPT, processFile } = require('./chat-gpt.js');
+
+// Mocha tests
+describe('queryChatGPT', () => {
+  it('should return the completion message', async () => {
+    const prompt = [{ role: 'system', content: 'You are a helpful assistant.' }, { role: 'user', content: 'Hello, how are you?' }];
+
+    const result = await queryChatGPT(prompt);
+    console.log(result);
+
+    // Assert the type of the result
+    assert.strictEqual(typeof result, 'object');
+
+    // Assert that the result contains the message
+    assert.ok(result);
+  });
+});
+
+describe('processFile', () => {
+  it('should return the completion message for the file content', async () => {
+    const filePath = './notebook/chat-gpt.tests.prompt';
+
+    const result = await processFile(filePath);
+    console.log(result);
+
+    // Assert the type of the result
+    assert.strictEqual(typeof result, 'object');
+
+    // Assert that the result contains the message
+    assert.ok(result);
+  });
+
+  it('should throw an error if file reading fails', async () => {
+    const filePath = 'nonexistent/file.txt';
+
+    // Assert that an error is thrown
+    await assert.rejects(async () => {
+      await processFile(filePath);
+    }, /*Error reading file*/);
+  });
+});
+
+```
+
+Could you write mocha tests for the following endpoints: 
+
+```js
+
+/*
+  
+  FILE CLERK
+
+  Here to save the day, as usual
+
+
+ */
+
+const path = require('path');
+const fs = require('fs');
+const fsPromises = require('fs').promises;
+
+function generateNewFile(file_id){
+  return `---
+{
+  "file-id":"${file_id}",
+  "date-created":"${new Date()}",
+  "last-updated":"${new Date()}"
+}
+---
+
+# ${file_id}
+
+`
+}
+
+
+module.exports = function (app) {
+
+  /*
+  
+    List All Notebook Pages
+
+   */
+  
+  app.post('/list-notebook-pages', async function (req, res) {
+    try {
+      const files = await fsPromises.readdir(path.join(global.root_directory, 'notebook'));
+      res.json(files);
+    } catch (err) {
+      res.status(500).json({ error: 'Error listing files' });
+    }
+  });
+
+  /*
+  
+    Get a single notebook page. If the page doesn't exist, create it.
+
+  */
+  app.post('/load-notebook-page', async function (req, res) {
+    if(!req.body["file-id"]){
+      return res.status(400).json({ error: 'file-id is required in the request body' });
+    }
+    const file_id = req.body["file-id"];
+    const file_path = path.join(global.root_directory, 'notebook', file_id);
+    try {
+      const content = await fsPromises.readFile(file_path, 'utf8');
+      res.json({ content });
+    } catch (err) {
+      const new_file = generateNewFile(file_id);
+      await fsPromises.writeFile(file_path, new_file, 'utf8', (err) => {
+        if (err) {return res.status(500)}
+      });
+      const content = await fsPromises.readFile(file_path, 'utf8');
+      res.json({ content });
+    }
+  });
+
+  /*
+    
+    Check if a File Exists
+
+   */
+  app.post('/does-file-exist', async function (req, res) {
+    if(!req.body["file-id"]){
+      return res.status(400).json({ error: 'file-id is required in the request body' });
+    }
+
+    const file_id = req.body["file-id"];
+    const file_path = path.join(global.root_directory, 'notebook', file_id);
+
+    try {
+      // Check if the file exists
+      const exists = await fsPromises.access(file_path, fs.constants.F_OK)
+        .then(() => true)
+        .catch(() => false);
+
+      res.json({ exists });
+    } catch (err) {
+      res.status(500).json({ error: 'Error checking file existence' });
+    }
+  });
+
+  /*
+  
+    DELETE FILE
+
+  */
+ 
+  app.post('/delete-file', async function (req, res) {
+    if (!req.body["file-id"]) {
+      return res.status(400).json({ error: 'file-id is required in the request body' });
+    }
+    const file_id = req.body["file-id"];
+    const file_path = path.join(global.root_directory, 'notebook', file_id);
+
+    try {
+      await fsPromises.unlink(file_path);
+      res.json({ message: 'File deleted successfully' });
+    } catch (err) {
+      res.status(500).json({ error: 'Error deleting the file' });
+    }
+  });
+
+
+  /*
+    Save a file
+
+   */
+  app.post('/save-file', async function (req, res) {
+    if (!req.body.content || !req.body["file-id"]) {
+        return res.status(400).json({ error: 'Both content and file-id are required in the request body' });
+    }
+    const file_id = req.body["file-id"];
+    // Construct the file path based on the provided file_path
+    const file_path = path.join(global.root_directory, 'notebook',  file_id );
+    // Write the content to the file
+    fs.writeFile(file_path, req.body.content, 'utf8', (err) => {
+      if (err) {
+          return res.status(500).json({ error: 'Error saving the file' });
+      }
+      res.json({ message: 'File saved successfully' });
+    });
+  });
+
+}
+
+```
+
+Our current tests look like:
+
+```
+const assert = require("assert");
+const fsPromises = require("fs").promises;
+const path = require("path");
+
+describe("File Clerk Endpoints", () => {
+  let app;
+  beforeEach(() => {
+    // Create a new express app instance before each test
+    app = express();
+  });
+
+  describe("POST /list-notebook-pages", () => {
+    it("should return a list of notebook pages", async () => {
+      const mockFiles = ["page1", "page2", "page3"];
+      // Stub the fsPromises.readdir method to return the mock files
+      fsPromises.readdir = jest.fn().mockResolvedValue(mockFiles);
+
+      // Make a request to the endpoint
+      const response = await request(app)
+        .post("/list-notebook-pages")
+        .expect(200);
+
+      // Assert that the response contains the mock files
+      assert.deepStrictEqual(response.body, mockFiles);
+    });
+
+    it("should return an error if the file listing fails", async () => {
+      // Stub the fsPromises.readdir method to throw an error
+      fsPromises.readdir = jest
+        .fn()
+        .mockRejectedValue(new Error("Error listing files"));
+
+      // Make a request to the endpoint
+      const response = await request(app)
+        .post("/list-notebook-pages")
+        .expect(500);
+
+      // Assert that the response contains the error message
+      assert.deepStrictEqual(response.body, { error: "Error listing files" });
+    });
+  });
+
+  describe("POST /load-notebook-page", () => {
+    it("should return the content of an existing notebook page", async () => {
+      const mockFileId = "page1";
+      const mockContent = "# page1\n";
+
+      // Stub the fsPromises.readFile method to return the mock content
+      fsPromises.readFile = jest.fn().mockResolvedValue(mockContent);
+
+      // Make a request to the endpoint
+      const response = await request(app)
+        .post("/load-notebook-page")
+        .send({ "file-id": mockFileId })
+        .expect(200);
+
+      // Assert that the response contains the mock content
+      assert.deepStrictEqual(response.body, { content: mockContent });
+    });
+
+    it("should create a new notebook page if it does not exist", async () => {
+      const mockFileId = "page2";
+
+      // Mock the fsPromises.readFile and fsPromises.writeFile methods
+      fsPromises.readFile = jest
+        .fn()
+        .mockRejectedValue(new Error("File not found"));
+      fsPromises.writeFile = jest.fn().mockResolvedValue();
+
+      // Make a request to the endpoint
+      const response = await request(app)
+        .post("/load-notebook-page")
+        .send({ "file-id": mockFileId })
+        .expect(200);
+
+      // Assert that the response contains the new page content
+      const newFileContent = `---\n{
+  "file-id":"${mockFileId}",
+  "date-created":"${new Date()}",
+  "last-updated":"${new Date()}"
+}\n---\n\n# ${mockFileId}\n`;
+      assert.deepStrictEqual(response.body, { content: newFileContent });
+    });
+
+    it("should return an error if the file read/write fails", async () => {
+      const mockFileId = "page3";
+
+      // Stub the fsPromises.readFile method to throw an error
+      fsPromises.readFile = jest
+        .fn()
+        .mockRejectedValue(new Error("Error reading file"));
+
+      // Make a request to the endpoint
+      const response = await request(app)
+        .post("/load-notebook-page")
+        .send({ "file-id": mockFileId })
+        .expect(500);
+
+      // Assert that the response contains the error message
+      assert.deepStrictEqual(response.body, { error: "Error reading file" });
+    });
+  });
+
+  describe("POST /does-file-exist", () => {
+    it("should return true if the file exists", async () => {
+      const mockFileId = "page1";
+      const mockFilePath = path.join(
+        global.root_directory,
+        "notebook",
+        mockFileId,
+      );
+
+      // Stub the fsPromises.access method to resolve without an error
+      fsPromises.access = jest.fn().mockResolvedValue();
+
+      // Make a request to the endpoint
+      const response = await request(app)
+        .post("/does-file-exist")
+        .send({ "file-id": mockFileId })
+        .expect(200);
+
+      // Assert that the response contains the existence flag as true
+      assert.deepStrictEqual(response.body, { exists: true });
+
+      // Assert that the fsPromises.access method was called with the correct file path
+      assert(fsPromises.access.mock.calls[0][0] === mockFilePath);
+    });
+
+    it("should return false if the file does not exist", async () => {
+      const mockFileId = "page2";
+
+      // Stub the fsPromises.access method to reject with an error
+      fsPromises.access = jest
+        .fn()
+        .mockRejectedValue(new Error("File not found"));
+
+      // Make a request to the endpoint
+      const response = await request(app)
+        .post("/does-file-exist")
+        .send({ "file-id": mockFileId })
+        .expect(200);
+
+      // Assert that the response contains the existence flag as false
+      assert.deepStrictEqual(response.body, { exists: false });
+    });
+
+    it("should return an error if the file existence check fails", async () => {
+      const mockFileId = "page3";
+
+      // Stub the fsPromises.access method to throw an error
+      fsPromises.access = jest
+        .fn()
+        .mockRejectedValue(new Error("Error checking file existence"));
+
+      // Make a request to the endpoint
+      const response = await request(app)
+        .post("/does-file-exist")
+        .send({ "file-id": mockFileId })
+        .expect(500);
+
+      // Assert that the response contains the error message
+      assert.deepStrictEqual(response.body, {
+        error: "Error checking file existence",
+      });
+    });
+  });
+
+  describe("POST /delete-file", () => {
+    it("should delete the file and return a success message", async () => {
+      const mockFileId = "page1";
+      const mockFilePath = path.join(
+        global.root_directory,
+        "notebook",
+        mockFileId,
+      );
+
+      // Stub the fsPromises.unlink method to resolve without an error
+      fsPromises.unlink = jest.fn().mockResolvedValue();
+
+      // Make a request to the endpoint
+      const response = await request(app)
+        .post("/delete-file")
+        .send({ "file-id": mockFileId })
+        .expect(200);
+
+      // Assert that the response contains the success message
+      assert.deepStrictEqual(response.body, {
+        message: "File deleted successfully",
+      });
+
+      // Assert that the fsPromises.unlink method was called with the correct file path
+      assert(fsPromises.unlink.mock.calls[0][0] === mockFilePath);
+    });
+
+    it("should return an error if the file deletion fails", async () => {
+      const mockFileId = "page2";
+
+      // Stub the fsPromises.unlink method to throw an error
+      fsPromises.unlink = jest
+        .fn()
+        .mockRejectedValue(new Error("Error deleting the file"));
+
+      // Make a request to the endpoint
+      const response = await request(app)
+        .post("/delete-file")
+        .send({ "file-id": mockFileId })
+        .expect(500);
+
+      // Assert that the response contains the error message
+      assert.deepStrictEqual(response.body, {
+        error: "Error deleting the file",
+      });
+    });
+  });
+
+  describe("POST /save-file", () => {
+    it("should save the file and return a success message", async () => {
+      const mockFileId = "page1";
+      const mockFilePath = path.join(
+        global.root_directory,
+        "notebook",
+        mockFileId,
+      );
+      const mockContent = "Some content";
+
+      // Stub the fsPromises.writeFile method to resolve without an error
+      fsPromises.writeFile = jest.fn().mockResolvedValue();
+
+      // Make a request to the endpoint
+      const response = await request(app)
+        .post("/save-file")
+        .send({ "file-id": mockFileId, content: mockContent })
+        .expect(200);
+
+      // Assert that the response contains the success message
+      assert.deepStrictEqual(response.body, {
+        message: "File saved successfully",
+      });
+
+      // Assert that the fsPromises.writeFile method was called with the correct arguments
+      assert(fsPromises.writeFile.mock.calls[0][0] === mockFilePath);
+      assert(fsPromises.writeFile.mock.calls[0][1] === mockContent);
+      assert(fsPromises.writeFile.mock.calls[0][2] === "utf8");
+    });
+
+    it("should return an error if the file saving fails", async () => {
+      const mockFileId = "page2";
+      const mockContent = "Some content";
+
+      // Stub the fsPromises.writeFile method to throw an error
+      fsPromises.writeFile = jest
+        .fn()
+        .mockRejectedValue(new Error("Error saving the file"));
+
+      // Make a request to the endpoint
+      const response = await request(app)
+        .post("/save-file")
+        .send({ "file-id": mockFileId, content: mockContent })
+        .expect(500);
+
+      // Assert that the response contains the error message
+      assert.deepStrictEqual(response.body, { error: "Error saving the file" });
+    });
+
+    it("should return an error if the content or file-id is missing", async () => {
+      // Make a request to the endpoint without the required fields
+      const response = await request(app).post("/save-file").expect(400);
+
+      // Assert that the response contains the error message
+      assert.deepStrictEqual(response.body, {
+        error: "Both content and file-id are required in the request body",
+      });
+    });
+  });
+});
+
+```
+
+The result is:
+
+```sh
+
+
+> test
+> mocha tests.js
+
+
+
+  0 passing (0ms)
+
+
+
+  1) File Clerk Endpoints
+       "before each" hook for "should return a list of notebook pages":
+     ReferenceError: express is not defined
+      at Context.<anonymous> (plugins/file-clerk/file-clerk.tests.js:9:5)
+      at process.processImmediate (node:internal/timers:478:21)
+
+```
+
+Could you rewrite these tests using Chai? 
+

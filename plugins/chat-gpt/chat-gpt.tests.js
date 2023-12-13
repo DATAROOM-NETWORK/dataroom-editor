@@ -19,7 +19,7 @@ describe('queryChatGPT', () => {
 
 describe('processFile', () => {
   it('should return the completion message for the file content', async () => {
-    const filePath = './notebook/chat-gpt.tests.prompt';
+    const filePath = './notebook/test.prompt';
 
     const result = await processFile(filePath);
     console.log(result);

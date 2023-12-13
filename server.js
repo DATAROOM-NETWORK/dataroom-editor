@@ -60,23 +60,24 @@ function getLocalIpAddress() {
   return null;
 }
 
-global.ipaddress = getLocalIpAddress();
+global.ip_address = getLocalIpAddress();
+
+global.root_directory = __dirname;
 
 app.use(express.json());
 app.use('/', express.static(__dirname + '/plugins')); // Serve files in the 'components' directory at the root URL
 app.use("/", express.static(__dirname + '/notebooks')); // Serve files in the 'assets' directory at the root URL
 app.use("/index.css", express.static(__dirname + '/index.css')); // Serve 'index.css' file at '/index.css' URL
 app.use("/index.js", express.static(__dirname + '/index.js')); // Serve 'index.js' file at '/index.js' URL
-app.use("/index.html", express.static(__dirname + '/index.html')); // Serve 'index.js' file at '/index.js' URL
 
 const routes = require('./routes.js')(app);
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'components', 'lnsy-edit', 'lnsy-edit.html'));
+  res.sendFile(path.join(global.root_directory, 'index.html'));
 });
 
 // Start the server and listen on the specified PORT
 app.listen(PORT, () => {
-  console.log(`Server listening on port ${global.ipaddress}/${PORT}`);
+  console.log(`Server listening on port http://${global.ip_address}:${PORT} and serving ${global.root_directory}`);
 });
 

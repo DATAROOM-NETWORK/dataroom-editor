@@ -30,7 +30,6 @@ const processFile = async (filePath) => {
   try {
     const fileContent = await fs.readFile(path.resolve(filePath), 'utf-8');
     const result = await queryChatGPT([{ role: 'system', content: hans_role }, { role: 'user', content: fileContent }]);
-    console.log(result);
     return result
   } catch (error) {
     throw new Error(`Error reading file: ${error.message}`);

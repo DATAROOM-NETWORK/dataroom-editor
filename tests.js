@@ -1,4 +1,10 @@
 const Mocha = require('mocha');
+const app = require('express')();  // Assuming Express is properly set up in your project
+
+const server = require('http').Server(app);  // Create an HTTP server using the Express app
+const routes = require('./routes.js')(app);
+
+
 
 const mocha = new Mocha({
   timeout: 60000, // A one minute time out
@@ -8,8 +14,9 @@ const mocha = new Mocha({
 
 
 mocha.addFile('./plugins/chat-gpt/chat-gpt.tests.js');
-
+// mocha.addFile('./plugins/file-clerk/file-clerk.tests.js');
 
 mocha.run((failures) => {
   process.exitCode = failures ? 1 : 0; // exit with non-zero status if there are failures
 });
+

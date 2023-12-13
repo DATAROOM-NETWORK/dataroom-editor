@@ -36,8 +36,21 @@ module.exports = function (app) {
   
   app.post('/list-notebook-pages', async function (req, res) {
     try {
-      const files = await fsPromises.readdir(path.join(global.root_directory, 'notebook'));
-      res.json(files);
+      // Extract the "type" parameter from the request body or set it to an empty string if not provided
+      const { type } = req.body || { type: '' };
+
+      // Get the directory path
+      const directoryPath = path.join(global.root_directory, 'notebook');
+
+      // Read all files in the directory
+      const files = await fsPromises.readdir(directoryPath);
+
+      // Filter files based on the provided "type" suffix or return all files if "type" is not provided
+      const filteredFiles = type
+        ? files.filter((file) => file.endsWith(`.${type}`))
+        : files;
+
+      res.json(filteredFiles);
     } catch (err) {
       res.status(500).json({ error: 'Error listing files' });
     }

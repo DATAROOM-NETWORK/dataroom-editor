@@ -1,3 +1,11 @@
+First option:
+
+https://css-tricks.com/in-page-filtered-search-with-vanilla-javascript/
+
+
+
+---
+
 hey Hans, 
 
 I am contemplating how to write a search function for a node.js project. I will be doing text search on a folder of markdown files in a folder called /notebook at the root of the application. Each markdown file has JSON frontmatter to store any metadata that seems reasonable. 

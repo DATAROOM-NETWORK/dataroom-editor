@@ -34,7 +34,7 @@ class NotebookPages extends HTMLElement {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(post)
+      body: JSON.stringify({type:''})
     });
     const data = response.json();
     return data;

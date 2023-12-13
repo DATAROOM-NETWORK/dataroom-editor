@@ -1,0 +1,183 @@
+#note
+
+This does not work, alas it was all a beautiful hallucination
+
+---
+
+**Hey Hans, could yougive me an example of some code that exports functions for moth node.js require and es6 imports?**
+
+Certainly! To create a module that can be used with both Node.js `require` and ES6 `import`, you can structure your code like this:
+
+Let's assume you have a file named `myModule.js`:
+
+```javascript
+// myModule.js
+
+// Function to be exported
+function add(a, b) {
+  return a + b;
+}
+
+// Another function to be exported
+function subtract(a, b) {
+  return a - b;
+}
+
+// Exporting functions for Node.js require
+module.exports = {
+  add,
+  subtract,
+};
+
+// Exporting functions for ES6 import
+export { add, subtract };
+```
+
+Now, you can use this module in both Node.js and ES6 environments:
+
+Node.js (using `require`):
+
+```javascript
+// Node.js example
+const myModule = require('./myModule');
+
+console.log(myModule.add(5, 3)); // Output: 8
+console.log(myModule.subtract(5, 3)); // Output: 2
+```
+
+ES6 (using `import`):
+
+```javascript
+// ES6 example
+import { add, subtract } from './myModule';
+
+console.log(add(5, 3)); // Output: 8
+console.log(subtract(5, 3)); // Output: 2
+```
+
+By structuring your module this way, you make it compatible with both CommonJS (Node.js `require`) and ES6 module imports.
+
+**This code gives me the error 'module is not defined' in the browser. Could you rewrite it to account for node and es6?**Sure, here's an updated version of the code that will work in both Node.js and browser environments:
+
+```javascript
+// myModule.js
+
+// Function to be exported
+function add(a, b) {
+  return a + b;
+}
+
+// Another function to be exported
+function subtract(a, b) {
+  return a - b;
+}
+
+// Checking for Node.js environment
+if (typeof module !== 'undefined' && module.exports) {
+  // Exporting functions for Node.js require
+  module.exports = {
+    add,
+    subtract,
+  };
+} else {
+  // Exporting functions for ES6 import
+  export { add, subtract };
+}
+```
+
+Node.js (using `require`):
+
+```javascript
+// Node.js example
+const myModule = require('./myModule');
+
+console.log(myModule.add(5, 3)); // Output: 8
+console.log(myModule.subtract(5, 3)); // Output: 2
+```
+
+Browser (using `import`):This error is most likely occurring because you are trying to use `export` without selecting a default export or a named export. Try rewriting your code like this:
+
+```javascript
+// myModule.js
+
+// Function to be exported
+function add(a, b) {
+  return a + b;
+}
+
+// Another function to be exported
+function subtract(a, b) {
+  return a - b;
+}
+
+// Default export
+export default add;
+
+// Named export
+export { subtract };
+```
+
+Once you have specified at least one default or named export, you should no longer receive the `Unexpected token 'export'` error.
+
+```javascript
+// Browser example
+import {add, subtract} from './myModule';
+
+console.log(add(5, 3)); // Output: 8
+console.log(subtract(5, 3)); // Output: 2
+```
+
+Now, the module will check for the `module` object before exporting functions for Node.js, and will default to using `export` for ES6.
+
+---
+
+this code gives me the error Uncaught SyntaxError: Unexpected token 'export' (at file-clerk.js:21:3)
+
+```js
+async function getNotebookPage(file_id){
+  const response = await fetch("/load-notebook-page", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({"file-id":file_id})
+  });
+  const data = response.json();
+  return data;
+}
+
+
+if (typeof module !== 'undefined' && module.exports) {
+  // Exporting functions for Node.js require
+  module.exports = {
+    getNotebookPage
+  };
+} else {
+  // Exporting functions for ES6 import
+  export { getNotebookPage };
+}
+```
+
+Could you tell me what's going on?
+The code is attempting to use both the CommonJS module system (for Node.js) and the ES6 module system (for modern browsers). The error is occurring because the `export` keyword is not recognized in Node.js (it is a feature of ES6 modules).
+
+To fix this issue, you can use conditional logic to determine which module system to use. For example:
+
+```js
+if (typeof module !== 'undefined' && module.exports) {
+  // Exporting functions for Node.js require
+  module.exports = {
+    getNotebookPage
+  };
+} else if (typeof define === 'function' && define.amd) {
+  // Exporting functions for AMD (e.g. RequireJS)
+  define(["exports"], function(exports) {
+    exports.getNotebookPage = getNotebookPage;
+  });
+} else {
+  // Exporting functions for ES6 import
+  export { getNotebookPage };
+}
+```
+
+This code checks for the `module` variable (used in Node.js modules), the `define` function (used in AMD modules), and the existence of the `export` keyword (used in ES6 modules). Based on which one is present, the code will use the appropriate syntax for exporting the `getNotebookPage` function.

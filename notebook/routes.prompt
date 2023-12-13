@@ -1,0 +1,36 @@
+How could I write the following code using ES6 import syntax in node.js?
+
+```js
+module.exports = function(app, server) {  
+
+  //  const generateComponent = require('./components/generate-new-component/generate-new-component.route.js')(app);
+  const fileClerk = require('./plugins/file-clerk/file-clerk.route.js')(app);
+}
+
+```js
+
+This task cannot be completed using ES6 import syntax as it is currently written. The code contains variable declarations and function calls, which are not possible with ES6 import syntax. However, if the code is modified to only have import statements, it could look like this:
+
+```js
+import generateComponent from './components/generate-new-component/generate-new-component.route.js';
+import fileClerk from './plugins/file-clerk/file-clerk.route.js';
+
+export default function(app, server) {
+  generateComponent(app);
+  fileClerk(app);
+}
+```
+
+Or, if the functions are modified to be exported as default, it could look like this:
+
+```js
+import generateComponent from './components/generate-new-component/generate-new-component.route.js';
+import fileClerk from './plugins/file-clerk/file-clerk.route.js';
+
+export default function(app, server) {
+  generateComponent()(app);
+  fileClerk()(app);
+}
+```
+
+This would allow for the functions to be imported directly and immediately passed the `app` parameter. However, this may not work depending on the functionality of the `generateComponent` and `fileClerk` functions. If they rely on variables or functionality from their respective files, then those variables or functions would need to be imported as well.

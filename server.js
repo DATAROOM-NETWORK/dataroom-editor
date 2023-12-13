@@ -68,6 +68,22 @@ app.use('/plugins', express.static(__dirname + '/plugins')); // Serve files in t
 app.use("/index.css", express.static(__dirname + '/index.css')); // Serve 'index.css' file at '/index.css' URL
 app.use("/index.js", express.static(__dirname + '/index.js')); // Serve 'index.js' file at '/index.js' URL
 
+/*
+  
+  NPM Libraries for use in the frontend. 
+
+ */
+
+app.use('/markdown-it.min.js', express.static('node_modules/markdown-it/dist/markdown-it.min.js'));
+
+app.use('/highlight.js', express.static('node_modules/highlight.js/es/index.js'));
+app.use('/highlight.javascript.js', express.static('node_modules/highlight.js/es/languages/javascript.js'));
+app.use('/highlight.json.js', express.static('node_modules/highlight.js/es/languages/javascript.js'));
+app.use('/highlight.markdown.js', express.static('node_modules/highlight.js/es/languages/javascript.js'));
+app.use('/highlight.python.js', express.static('node_modules/highlight.js/es/languages/javascript.js'));
+
+
+
 const routes = require('./routes.js')(app);
 
 app.get('/', (req, res) => {

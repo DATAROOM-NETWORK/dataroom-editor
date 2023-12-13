@@ -3,6 +3,15 @@ mark-down {
   display: block;
 }
 
+hash-tag {
+  color: var(--dark-color);
+  background-color: var(--highlight-color);
+}
+
+link-tag {
+  color: var(--dark-color);
+  background-color: var(--secondary-highlight-color);
+}
 
 /*
 

@@ -10,9 +10,10 @@ import "./vendor/markdown-it.min.js";
 import { hljs } from "./vendor/highlight/highlight.min.js";
 const md = markdownit();
 
-
 import "./mark-down.hash-tag.js";
+import "./mark-down.link-tag.js";
 import { getNotebookPage } from '../file-clerk/file-clerk.interface.js';
+
 
 /*
   
@@ -53,7 +54,9 @@ class MarkDown extends HTMLElement {
 
   render(content){
     const parsed_content = content.removeFrontMatter();
-    const html_content = md.render(parsed_content);
+    const html_content = md.render(parsed_content)
+      .wrapHashtags()
+      .wrapLinks();
     this.innerHTML = html_content;
     [...this.querySelectorAll('code')].forEach(codeblock => {
       hljs.highlightElement(codeblock);

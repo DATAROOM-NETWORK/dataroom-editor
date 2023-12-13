@@ -12,3 +12,4 @@
 */
 
 // import "./components/helpers/helpers.js";
+import "./plugins/file-clerk/file-clerk.interface.js";

@@ -4,126 +4,20 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Dataroom Editor</title>
+  <script src="//unpkg.com/three"></script>
+  <script type="importmap">{ "imports": { "three": "https://unpkg.com/three/build/three.module.js" }}</script>
+
+  <script src="/index.js" type="module"></script>
+
+  <link href="/index.css" rel="stylesheet" type="text/css">
+
 </head>
 <body>
 <h1>DATAROOM</h1>
 
-<style>
-  hash-tag {
-    background-color: orange;
-    display: block;
-  }
-</style>
-
-<script>
-
-// async function getNotebookPage(file_id){
-//   const response = await fetch("/load-notebook-page", {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify({"file-id":file_id})
-//   });
-//   const data = response.json();
-//   return data;
-// }
-
-// getNotebookPage('index.md').then(res => {
-//   console.log(res);
-// })
-// 
-
-
-async function checkIfFileExists(file_id = 'index.md'){
-const response = await fetch("/does-file-exist", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({"file-id":file_id})
-  });
-  const data = await response.json();
-  console.log(file_id, "exists?", data.exists);
-  return data;
-}
-
-checkIfFileExists();
-
-
-async function deleteFile(file_id = 'index.md'){
-const response = await fetch("/delete-file", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({"file-id":file_id})
-  });
-  const data = await response.json();
-  console.log(file_id, 'deleted');
-  return data;
-}
-
-deleteFile();
-checkIfFileExists();
-
-
-class NotebookPages extends HTMLElement {
-  connectedCallback(){
-    this.init();
-  }
-  async init(){
-    const data = await this.fetchData();
-    this.innerHTML = data.map(d => {
-      return `<hash-tag>${d}</hash-tag>`
-    }).join('');
-  }
-  async fetchData(post = {}){
-    const response = await fetch("/list-notebook-pages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(post)
-    });
-    const data = response.json();
-    return data;
-  }
-}
-
-customElements.define('notebook-pages', NotebookPages);
-
-class NotebookPage extends HTMLElement {
-  connectedCallback(){
-    this.init();
-  }
-  async init(){
-    const data = await this.fetchData();
-    this.innerText = JSON.stringify(data);
-  }
-  async fetchData(){
-    const response = await fetch("/load-notebook-page", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({"file-id":this.id})
-    });
-    const data = response.json();
-    return data;
-  }
-}
-
-customElements.define('notebook-page', NotebookPage);
-
-
-
-
-</script>
-
 <notebook-pages></notebook-pages>
 
-<notebook-page id="index.md"></notebook-page>
+<notebook-page id="chat-gpt.md"></notebook-page>
 
 </body>
 </html>

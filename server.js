@@ -61,12 +61,10 @@ function getLocalIpAddress() {
 }
 
 global.ip_address = getLocalIpAddress();
-
 global.root_directory = __dirname;
 
 app.use(express.json());
-app.use('/', express.static(__dirname + '/plugins')); // Serve files in the 'components' directory at the root URL
-app.use("/", express.static(__dirname + '/notebooks')); // Serve files in the 'assets' directory at the root URL
+app.use('/plugins', express.static(__dirname + '/plugins')); // Serve files in the 'components' directory at the root URL
 app.use("/index.css", express.static(__dirname + '/index.css')); // Serve 'index.css' file at '/index.css' URL
 app.use("/index.js", express.static(__dirname + '/index.js')); // Serve 'index.js' file at '/index.js' URL
 

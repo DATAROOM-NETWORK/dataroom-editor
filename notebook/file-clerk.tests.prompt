@@ -6,6 +6,49 @@
 }
 ---
 
+#file-clerk.list-notebooks.tests.prompt
+#file-clerk.load-notebook-page.tests.prompt
+
+Some Manual tests that seem to work:
+
+```js
+
+async function checkIfFileExists(file_id = 'index.md'){
+const response = await fetch("/does-file-exist", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({"file-id":file_id})
+  });
+  const data = await response.json();
+  console.log(file_id, "exists?", data.exists);
+  return data;
+}
+
+checkIfFileExists();
+
+
+async function deleteFile(file_id = 'index.md'){
+const response = await fetch("/delete-file", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({"file-id":file_id})
+  });
+  const data = await response.json();
+  console.log(file_id, 'deleted');
+  return data;
+}
+
+deleteFile();
+checkIfFileExists();
+
+
+```
+
+
 Hey Hans, 
 
 Here is an example of some tests we have: 

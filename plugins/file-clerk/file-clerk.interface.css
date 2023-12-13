@@ -1,0 +1,17 @@
+/*
+  
+  FILE CLERK
+
+  
+ */
+
+
+notebook-page {
+  display: block;
+  background-color: green;
+}
+
+notebook-pages {
+  display: block;
+  background-color:red;
+}

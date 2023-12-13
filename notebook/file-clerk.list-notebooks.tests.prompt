@@ -1,0 +1,47 @@
+I have an endpoint that looks like: 
+
+```
+module.exports = function (app) {
+
+  app.post('/list-notebook-pages', async function (req, res) {
+    try {
+      const files = await fsPromises.readdir(path.join(global.root_directory, 'notebook'));
+      res.json(files);
+    } catch (err) {
+      res.status(500).json({ error: 'Error listing files' });
+    }
+  });
+}
+```
+
+Where app is an express.js app. 
+
+I am using Mocha and Chai for tests. My initial code for these tests looks like: 
+
+```js
+const chai = require("chai");
+const chaiHttp = require("chai-http");
+const fsPromises = require("fs").promises;
+const path = require("path");
+const app = require('express')();  // Assuming Express is properly set up in your project
+const server = require('http').Server(app);  // Create an HTTP server using the Express app
+const routes_path = path.join(global.root_directory, 'routes.js');
+const routes = require(routes_path)(app);
+const sinon = require('sinon');
+
+
+const expect = chai.expect;
+
+chai.use(chaiHttp);
+
+describe("File Clerk Endpoints", () => {
+
+  describe("POST /list-notebook-pages", () => {
+
+  });
+
+});
+
+```
+
+Could you complete the tests for this end point? No need to give me anything other than code. Please only give me code responses.

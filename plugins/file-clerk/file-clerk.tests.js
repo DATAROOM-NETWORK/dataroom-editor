@@ -50,55 +50,52 @@ describe("File Clerk Endpoints", () => {
     });
   });
 
-  // describe("POST /load-notebook-page", () => {
-  //   it("should return 'file-id is required' error if file-id is not provided", async () => {
-  //     const res = await chai
-  //       .request(app)
-  //       .post("/load-notebook-page")
-  //       .send({}); // Send an empty request body
+  describe("POST /load-notebook-page", () => {
+    it("should return 'file-id is required' error if file-id is not provided", async () => {
+      const res = await chai
+        .request(server)
+        .post("/load-notebook-page")
+        .send({}); // Send an empty request body
 
-  //     expect(res).to.have.status(400);
-  //     expect(res.body).to.deep.equal({
-  //       error: "file-id is required in the request body",
-  //     });
-  //     done();
-  //   });
+      expect(res.status).to.equal(400);
+      expect(res.body).to.deep.equal({
+        error: "file-id is required in the request body",
+      });
+    });
 
-  //   it("should return the content of the file if it exists", async () => {
-  //     // Stub the fsPromises.readFile function to return a test content
-  //     const readFileStub = sinon.stub(fsPromises, "readFile");
-  //     readFileStub.resolves("Test file content");
+    it("should return the content of the file if it exists", async () => {
+      // Stub the fsPromises.readFile function to return a test content
+      const readFileStub = sinon.stub(fsPromises, "readFile");
+      readFileStub.resolves("Test file content");
 
-  //     const res = await chai
-  //       .request(app)
-  //       .post("/load-notebook-page")
-  //       .send({ "file-id": "test.prompt" });
+      const res = await chai
+        .request(server)
+        .post("/load-notebook-page")
+        .send({ "file-id": "test.prompt" });
 
-  //     expect(res).to.have.status(200);
-  //     expect(res.body.content).to.equal("Test file content");
+      expect(res.status).to.equal(200);
+      expect(res.body.content).to.equal("Test file content");
 
-  //     readFileStub.restore(); // Restore the original function
-  //     done();
-  //   });
+      readFileStub.restore(); // Restore the original function
+    });
 
-  //   it("should create a new file and return its content if it doesn't exist", async () => {
-  //     // Stub the fsPromises.readFile and fsPromises.writeFile functions
-  //     const readFileStub = sinon.stub(fsPromises, "readFile");
-  //     const writeFileStub = sinon.stub(fsPromises, "writeFile");
-  //     readFileStub.rejects(new Error("File not found"));
-  //     writeFileStub.resolves();
+    it("should create a new file and return its content if it doesn't exist", async () => {
+      // Stub the fsPromises.readFile and fsPromises.writeFile functions
+      const readFileStub = sinon.stub(fsPromises, "readFile");
+      const writeFileStub = sinon.stub(fsPromises, "writeFile");
+      readFileStub.rejects(new Error("File not found"));
+      writeFileStub.resolves();
 
-  //     const res = await chai
-  //       .request(app)
-  //       .post("/load-notebook-page")
-  //       .send({ "file-id": "test.missing.prompt" });
+      const res = await chai
+        .request(server)
+        .post("/load-notebook-page")
+        .send({ "file-id": "test.missing.prompt" });
 
-  //     expect(res).to.have.status(200);
-  //     expect(res.body.content).to.equal("Generated file content");
+      expect(res.status).to.equal(200);
+      expect(res.body.content).to.equal("Generated file content");
 
-  //     readFileStub.restore(); // Restore the original functions
-  //     writeFileStub.restore();
-  //     done();
-  //   });
-  // });
+      readFileStub.restore(); // Restore the original functions
+      writeFileStub.restore();
+    });
+  });
 });

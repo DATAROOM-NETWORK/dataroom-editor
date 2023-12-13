@@ -14,14 +14,15 @@
 </head>
 <body>
 <h1>DATAROOM</h1>
+<notebook-pages id="notebook_pages"></notebook-pages>
+<notebook-page id="index"></notebook-page>
 
-<mark-down>
-  First test of Markdown
-</mark-down>
-
-<mark-down></mark-down>
-
-<mark-down id="mark-down.md"></mark-down>
+<script>
+  const notebook_page = document.querySelector('notebook-page');
+  notebook_pages.addEventListener('notebook-page-selected', (e) => {
+    notebook_page.setAttribute('id', e.detail);
+  });
+</script>
 
 </body>
 </html>

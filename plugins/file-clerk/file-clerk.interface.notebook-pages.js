@@ -5,15 +5,28 @@
  */
 
 
+
 class NotebookPages extends HTMLElement {
   connectedCallback(){
+    this.ul = document.createElement('ul');
+    this.appendChild(this.ul)
     this.init();
   }
   async init(){
     const data = await this.fetchData();
-    this.innerHTML = data.map(d => {
-      return `<hash-tag>${d}</hash-tag>`
-    }).join('');
+    data.forEach(d => {
+      const item = document.createElement('li');
+      item.innerText = d; 
+      item.addEventListener('click', (e) => {
+        const select_notebook = new CustomEvent("notebook-page-selected", {
+          detail:d
+        });
+
+        this.dispatchEvent(select_notebook)
+       
+      });
+      this.ul.appendChild(item);
+    })
   }
   async fetchData(post = {}){
     const response = await fetch("/list-notebook-pages", {

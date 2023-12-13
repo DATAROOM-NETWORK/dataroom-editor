@@ -10,9 +10,18 @@ class NotebookPage extends HTMLElement {
     this.init();
   }
   async init(){
-    const data = await this.fetchData(this.id);
-    this.innerText = JSON.stringify(data);
+    if(!this.id){return}
+    this.renderPage(id);
   }
+
+  async renderPage(id){
+    const data = await this.fetchData(id);
+    const markdown_component = document.createElement('mark-down');
+    markdown_component.innerText = data.content;
+    this.innerHTML = " ";
+    this.appendChild(markdown_component);
+  }
+
   async fetchData(id){
     const response = await fetch("/load-notebook-page", {
       method: "POST",
@@ -31,7 +40,7 @@ class NotebookPage extends HTMLElement {
   attributeChangedCallback(name, old_value, new_value){
     switch(name){
       case 'id':
-        this.fetchData(new_value);
+        this.renderPage(new_value);
         break;
       default:
     }

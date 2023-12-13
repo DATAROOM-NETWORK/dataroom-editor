@@ -3,7 +3,6 @@
 
 ## Overview
 
-Please see [index](./notebook/index.md) for more information
 
 ## Getting Started
 

@@ -21,3 +21,5 @@ import "./components/geo-map/geo-map.js";
 import "./components/simple-modal/simple-modal.js";
 
 import "./components/control-panel/control-panel.js";
+
+import "./components/rss-feed/rss-feed.js";

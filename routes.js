@@ -16,4 +16,6 @@ module.exports = function(app, server) {
 
   const controlPanel = require('./components/control-panel/control-panel.route.js')(app);
 
+
+  const RSSFeed = require('./components/rss-feed/rss-feed.route.js')(app);
 }

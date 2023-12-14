@@ -1,0 +1,11 @@
+/*
+  RSSFeed
+  rss-feed
+*/
+rss-feed {
+  display:block;
+}
+
+rss-feed item {
+  display: block;
+}

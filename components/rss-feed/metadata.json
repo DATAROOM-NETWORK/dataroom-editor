@@ -1,0 +1,5 @@
+{
+  "name":"RSSFeed",
+  "id":"rss-feed",
+  "description": "Gets the RSS feed of a component"
+}

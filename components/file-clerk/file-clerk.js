@@ -7,6 +7,8 @@
   See https://javascript.info/custom-elements for more information
 */
 
+
+
 class fileClerk extends HTMLElement {
   constructor() {
     super();
@@ -22,16 +24,23 @@ class fileClerk extends HTMLElement {
 
   async init(){
     const data = await this.fetchData();
-    this.innerText = JSON.stringify(data);
+    console.log(data)
+    const file_list = data.files
+      .filter(f => f.slice(-2).toLowerCase() === 'md')
+      .map(f => {
+        return '#' + f.substring(0, f.length - 3)
+    }).join(`
+
+    `);
+
+    const markdown_container = document.createElement('mark-down');
+    markdown_container.innerText = file_list;
+    this.appendChild(markdown_container);
   }
 
   async fetchData(post = {}){
-    const response = await fetch("/file-clerk", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(post)
+    const response = await fetch("/list-files", {
+      method: "GET",
     });
     const data = response.json();
     return data;
@@ -58,4 +67,4 @@ class fileClerk extends HTMLElement {
   }
 }
 
-customElements.define('file-clerk', fileClerk);
+customElements.define('file-list', fileClerk)

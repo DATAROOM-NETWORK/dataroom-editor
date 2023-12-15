@@ -1,0 +1,70 @@
+I have the following node.js code:
+```js
+app.post('/does-file-exist', async function (req, res) {
+    if(!req.body["file-id"]){
+      return res.status(400).json({ error: 'file-id is required in the request body' });
+    }
+
+    const file_id = req.body["file-id"];
+    const file_path = path.join(global.root_directory, 'notebook', file_id);
+
+    try {
+      // Check if the file exists
+      const exists = await fsPromises.access(file_path, fs.constants.F_OK)
+        .then(() => true)
+        .catch(() => false);
+
+      res.json({ exists });
+    } catch (err) {
+      res.status(500).json({ error: 'Error checking file existence' });
+    }
+  });
+```
+
+please write a function called checkID that uses the browser's fetch api to query this end point with an ID and returns a true or false if a file exists or not
+Here's a possible implementation of the `checkID` function:
+
+```js
+async function checkID(fileId) {
+  try {
+    const response = await fetch('/does-file-exist', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        'file-id': fileId,
+      }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data.exists;
+    } else {
+      console.error(`Server returned with status code ${response.status}`);
+      return false;
+    }
+  } catch (err) {
+    console.error('Error querying server');
+    return false;
+  }
+}
+```
+
+Explanation:
+
+1. The `checkID` function is defined as an `async` function, which means it will always return a promise, making it easy to handle any asynchronous operations it may contain.
+
+2. Inside the function, we use `async/await` syntax to perform the API request. The `await` keyword makes sure that the function suspends its execution until the promise returned by `fetch` is resolved.
+
+3. The first argument to `fetch` is the URL of the endpoint to query, which in this case is `"/does-file-exist"`. We also specify the method of the request as `POST`, since the endpoint expects a POST request.
+
+4. We also specify the `Content-Type` header as `application/json` so that the server knows to expect JSON data in the body of the request.
+
+5. The body of the request is constructed using the `JSON.stringify` method, which converts a JavaScript object into a JSON string. In this case, the object contains the `file-id` property with the value of the `fileId` parameter.
+
+6. Once the API request is resolved, we check the response `status` property to see if it is `ok` (200). If it is, we convert the response body to JSON using the `json` method and then return the value of the `exists` property.
+
+7. If the response `status` is not `ok`, we log an error message and return `false`.
+
+8. If there is an error while querying the server, for example if the server is down or the request times out, the `fetch` promise will be rejected and the `catch` block will be executed. We log an error message and return `false`.

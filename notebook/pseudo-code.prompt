@@ -1,0 +1,14 @@
+Hey Hans,
+
+I am thinking about writing a pseudo code interpreter. Here are some of the rules of this interpreter: 
+
+it takes simple, easy to understand pseudo code
+and translates that to highly readable javascript. 
+
+We have the concept of a document. A document is a collection of pseudo code with JSON frontmatter. The variables set in the JSON Frontmatter can be 
+
+The pound sign (#) indicates an external document to import. It will import all variables, also. 
+
+So, say there is a markdown file
+
+A variable can be assigned with the @ at the beginning of the word. 

@@ -1,0 +1,74 @@
+Assuming node.js and javascript. 
+
+Please write both backend and front end code for a websocket connection between the browser and the server. Backend code:
+
+```js
+const express = require('express');
+const http = require('http');
+const WebSocket = require('ws');
+
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ port:443 });
+
+wss.on('connection', (ws) => {
+  console.log('A new client has connected');
+
+  // event listener for incoming messages
+  ws.on('message', (message) => {
+    console.log(`Received message from client: ${message}`);
+
+    // sending response back to client
+    ws.send(`Server received your message: ${message}`);
+  });
+
+  // event listener for closing the connection
+  ws.on('close', () => {
+    console.log('Client has disconnected');
+  });
+});
+
+// starting the server
+server.listen(3000, () => {
+  console.log('Server listening on port 3000');
+});
+
+
+Front end code:
+
+// creating a new Websocket connection
+const connection = new WebSocket('ws://localhost:443');
+
+// event listener for connection open
+connection.onopen = () => {
+  console.log('Connection to server established');
+}
+
+// event listener for receiving messages
+connection.onmessage = (event) => {
+  console.log(`Received message from server: ${event.data}`);
+}
+
+// sending a message to the server
+connection.send('Hello server');
+
+```
+
+
+This code doesn't seem to work, on the front end I get the error: WebSocket connection to 'ws://localhost:443/' failed: 
+
+
+SEVERE: null | Client has disconnected on the backend. 
+
+Could you give me a bit on a insight on why/where you think the errors might be?
+
+It's difficult to say without seeing the full code and setup, but here are a few things to consider:
+
+1. Make sure you are using the correct port, depending on your setup the server may be listening on a different port than 443.
+2. Check that both the frontend and backend code are running on the same IP address.
+3. Make sure the frontend connection is using the correct protocol (ws or wss) based on your server configuration.
+4. Check for any errors or log messages that may indicate the source of the problem, such as CORS errors. 
+5. Make sure the server is configured to allow websocket connections. 
+6. Check that the browser supports websockets.
+
+

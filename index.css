@@ -14,3 +14,4 @@
 @import "./plugins/styles/index.css";
 @import "./plugins/file-clerk/file-clerk.interface.css";
 @import "./plugins/mark-down/mark-down.interface.css";
+@import "./plugins/layouts/layouts.css";

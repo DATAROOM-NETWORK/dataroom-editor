@@ -20,22 +20,33 @@ String.prototype.wrapHashtags = function() {
 };
 
 
+function findNearestNotebookPage(){
+  const tagName = 'notebook-page'.toUpperCase();
+  while(element){
+    if(element.tagName = tagName){
+      return element;
+    }
+    element = element.parentNode;
+  }
+
+}
+
 
 class HashTag extends HTMLElement {
   connectedCallback(){
     this.addEventListener('click', (e) => {
-      console.log(this.innerText);
-    //   const open_in_new_tab = e.ctrlKey;
-    //   if (open_in_new_tab) {
-    //     const new_url = generateURLFromObject({'file-id':this.innerText})
-    //     const newTab = window.open(new_url, '_blank');
-    //     if (newTab) {
-    //       newTab.focus();
-    //     }
-    //   } else {
-    //     setURLValues({'file-id':this.innerText});
-    //     window.location.assign(window.location.href);
-    //   }
+      console.log(this.innerText)
+      // Create a new custom event with a specific type (e.g., "customEvent") and a detail property
+    const hash_tag_clicked = new CustomEvent("hash-tag-clicked", {
+        detail: {
+            hash_tag_id: this.innerText
+        }
+    });
+
+    // Dispatch the custom event on a target element or the document
+    // For example, dispatching on the document:
+    this.dispatchEvent(hash_tag_clicked);
+
     });
   }
 }

@@ -8,8 +8,13 @@
 
 class NotebookPages extends HTMLElement {
   connectedCallback(){
+    const details = document.createElement('details');
+    const summary = document.createElement('summary');
+    summary.innerText = ' ';
+    details.appendChild(summary);
     this.ul = document.createElement('ul');
-    this.appendChild(this.ul)
+    details.appendChild(this.ul);
+    this.appendChild(details);
     this.init();
   }
   async init(){

@@ -13,16 +13,11 @@
 
 </head>
 <body>
-<h1>DATAROOM</h1>
-<notebook-pages id="notebook_pages"></notebook-pages>
-<notebook-page id="index"></notebook-page>
 
-<script>
-  const notebook_page = document.querySelector('notebook-page');
-  notebook_pages.addEventListener('notebook-page-selected', (e) => {
-    notebook_page.setAttribute('id', e.detail);
-  });
-</script>
+  <dataroom-server></dataroom-server>
+<dataroom-panel mode="graph-mode" dtrm-id="panel-0">
+  
+</dataroom-panel>
 
 </body>
 </html>

@@ -11,8 +11,10 @@ class NotebookPage extends HTMLElement {
   }
   async init(){
     if(!this.id){return}
-    this.renderPage(id);
+    this.renderPage(this.id);
   }
+
+
 
   async renderPage(id){
     const data = await this.fetchData(id);
@@ -20,6 +22,13 @@ class NotebookPage extends HTMLElement {
     markdown_component.innerText = data.content;
     this.innerHTML = " ";
     this.appendChild(markdown_component);
+    [...this.querySelectorAll('hash-tag')].forEach(hashtag => {
+      hashtag.addEventListener('hash-tag-clicked', (e) => {
+        e.preventDefault();
+        const { hash_tag_id } = e.detail;
+        this.setAttribute('id', hash_tag_id);
+      })
+    })
   }
 
   async fetchData(id){
@@ -38,6 +47,7 @@ class NotebookPage extends HTMLElement {
   }
 
   attributeChangedCallback(name, old_value, new_value){
+    console.log(new_value)
     switch(name){
       case 'id':
         this.renderPage(new_value);

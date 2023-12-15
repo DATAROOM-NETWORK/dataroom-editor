@@ -1,0 +1,134 @@
+I have the following node.js code:
+
+```js
+
+const path = require('path');
+const fs = require('fs');
+const fsPromises = require('fs').promises;
+
+
+module.exports = function (app) {
+  app.post('/list-notebook-pages', async function (req, res) {
+    try {
+      // Extract the "type" parameter from the request body or set it to an empty string if not provided
+      const { type } = req.body || { type: '' };
+
+      // Get the directory path
+      const directoryPath = path.join(global.root_directory, 'notebook');
+
+      // Read all files in the directory
+      const files = await fsPromises.readdir(directoryPath);
+
+      // Filter files based on the provided "type" suffix or return all files if "type" is not provided
+      const filteredFiles = type
+        ? files.filter((file) => file.endsWith(`.${type}`))
+        : files;
+
+      res.json(filteredFiles);
+    } catch (err) {
+      res.status(500).json({ error: 'Error listing files' });
+    }
+  });
+}
+```
+
+That is currently accessed by the following code: 
+
+```js
+async function fetchData(post = {}){
+  const response = await fetch("/list-notebook-pages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({type:''})
+  });
+  const data = response.json();
+  return data;
+}
+
+```
+
+Please rewrite this code to utilize service workers to assume that the server isn't necessarily always available
+
+---
+To use service workers for offline support, you can modify the client-side code to check if the service worker is available and handle the request accordingly. Here's an example modification to your client-side code:
+
+```js
+// Check if the service worker is supported by the browser
+if ('serviceWorker' in navigator) {
+  // Register the service worker
+  navigator.serviceWorker.register('/service-worker.js')
+    .then((registration) => {
+      console.log('Service Worker registered with scope:', registration.scope);
+    })
+    .catch((error) => {
+      console.error('Service Worker registration failed:', error);
+    });
+}
+
+// Function to fetch data either from the server or cache
+async function fetchData(post = {}) {
+  try {
+    // Check if the service worker is active
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+      // Try to get data from the cache first
+      const cacheResponse = await caches.match('/list-notebook-pages');
+      if (cacheResponse) {
+        const cachedData = await cacheResponse.json();
+        return cachedData;
+      }
+    }
+
+    // If not available in the cache or service worker is not active, fetch from the server
+    const response = await fetch("/list-notebook-pages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(post)
+    });
+
+    // Cache the fetched data
+    if ('caches' in window) {
+      const cache = await caches.open('my-cache');
+      await cache.put('/list-notebook-pages', response.clone());
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    throw error;
+  }
+}
+```
+
+Additionally, you'll need to create a service worker file (e.g., `service-worker.js`) that caches the responses:
+
+```js
+// service-worker.js
+
+const CACHE_NAME = 'my-cache';
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll([
+        // Add URLs to cache here
+        '/list-notebook-pages',
+      ]);
+    })
+  );
+});
+
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
+    })
+  );
+});
+```
+
+Make sure to customize the URLs in the service worker to match your application's URLs that you want to cache. The service worker will intercept fetch requests and check if the response is available in the cache. If it's not in the cache, it will fetch the data from the server and cache it for future requests.

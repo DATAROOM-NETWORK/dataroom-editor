@@ -1,0 +1,107 @@
+Hey Hans, 
+
+I have the following code:
+
+```js
+class DataroomElement extends HTMLElement {
+  constructor(){
+    super();
+    if(!this.id){
+      this.id = `dtrm-${crypto.randomUUID()}`;
+    }
+  }
+
+  connectedCallback(){
+    this.dataroomEvent('connected', {id: this.id});
+  }
+
+  dtrmEvent(name, detail){
+    const drEvent = new CustomEvent(name, {
+      detail
+    });
+
+    this.dispatchEvent(drEvent);
+  }
+}
+```
+
+could you rewrite this code to use the observable API to watch for changes for all children of this element? Sure, here's the rewritten code using the observable API:
+
+```js
+class DataroomElement extends HTMLElement {
+  constructor(){
+    super();
+    const observer = new MutationObserver(() => {
+      this.handleChanges();
+    });
+    observer.observe(this, { subtree: true, childList: true });
+    this.handleChanges();
+  }
+
+  handleChanges(){
+    const children = this.querySelectorAll('*');
+    children.forEach(child => {
+      child.addEventListener('connected', event => {
+        const detail = event.detail;
+        this.dtrmEvent('connected', {id: detail.id});
+      });
+    });
+  }
+
+  dtrmEvent(name, detail){
+    const dtrmEvent = new CustomEvent(name, {
+      detail
+    });
+
+    this.dispatchEvent(dtrmEvent);
+  }
+}
+```
+
+Using the `MutationObserver` allows us to listen for changes to the element's children and call the `handleChanges` method whenever a change occurs. In the `handleChanges` method, we iterate through all children of the element and add an event listener for the `connected` event. This event listener then calls the `dtrmEvent` method and dispatches a `CustomEvent` with the desired parameters. This ensures that any changes to the children's `connected` event will trigger the `dtrmEvent` and dispatch the custom event.
+
+---
+
+rewrite this code so that handleChanges gives me a list of all new elements and all removed elements
+
+Sure, here's the modified code with the `handleChanges` method returning lists of new and removed elements:
+
+```js
+class DataroomElement extends HTMLElement {
+  constructor(){
+    super();
+    const observer = new MutationObserver(() => {
+      const {addedNodes, removedNodes} = this.handleChanges();
+    });
+    observer.observe(this, { subtree: true, childList: true });
+    const {addedNodes, removedNodes} = this.handleChanges();
+  }
+
+  handleChanges(){
+    const oldChildren = Array.from(this.children);
+    const newChildren = Array.from(this.querySelectorAll('*'));
+
+    const addedNodes = newChildren.filter(node => !oldChildren.includes(node));
+    const removedNodes = oldChildren.filter(node => !newChildren.includes(node));
+
+    addedNodes.forEach(child => {
+      child.addEventListener('connected', event => {
+        const detail = event.detail;
+        this.dtrmEvent('connected', {id: detail.id});
+      });
+    });
+
+    return {addedNodes, removedNodes};
+  }
+
+  dtrmEvent(name, detail){
+    const dtrmEvent = new CustomEvent(name, {
+      detail
+    });
+
+    this.dispatchEvent(dtrmEvent);
+  }
+}
+``` 
+
+In this modified code, we first convert the element's `children` and all of its descendants into arrays. Then, we use the `filter` method to find the added and removed nodes by comparing the old and new arrays. We also move the event listener registration for new elements inside the `handleChanges` method to ensure that it only registers for newly added elements. Finally, we return the lists of added and removed nodes so that they can be accessed outside of the `handleChanges` method.

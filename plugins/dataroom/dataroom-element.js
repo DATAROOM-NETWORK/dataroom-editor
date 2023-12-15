@@ -1,25 +1,34 @@
 export class DataroomElement extends HTMLElement {
+
   constructor(){
     super();
     this.dtrm_id = this.getAttribute('dtrm-id');
     if(this.dtrm_id === null){
-      this.dtrm_id = `dtrm-${crypto.randomUUID()}`;
+      return console.error('dtrm-id required');
     }
-    // run before anything else
-    this.preLoad()
-  }
+    this.container = document.createElement('dataroom-container');
+    this.appendChild(this.container);
 
-  preLoad(){
-    return
   }
 
   connectedCallback(){
-    this.setAttribute('dtrm-id', this.dtrm_id);
     this.initialize();
+    this.updateFile();
+    const dtrm_server = document.querySelector('dataroom-server');
+    dtrm_server.addEventListener(this.dtrm_id, (e) => {
+      console.log('updating', this.dtrm_id);
+      this.updateFile();
+    });
+  }
+
+  async updateFile(){
+    const { content } = await this.getFile(this.dtrm_id);
+    this.container.innerHTML = content;
   }
 
   async initialize(){
     console.log('please override initialize in your own class');
+
   }
 
   setAttributesFromObject(obj = {}){

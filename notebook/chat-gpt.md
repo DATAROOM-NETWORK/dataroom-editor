@@ -17,4 +17,3 @@
 ## code
 
 @plugins/chat-gpt/chat-gpt.js
-

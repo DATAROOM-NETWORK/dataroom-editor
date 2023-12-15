@@ -6,6 +6,7 @@
 
  */
 
+import {DataroomElement} from "../dataroom/dataroom-element.js";
 import "./vendor/markdown-it.min.js";
 import { hljs } from "./vendor/highlight/highlight.min.js";
 const md = markdownit();
@@ -34,20 +35,21 @@ String.prototype.removeFrontMatter = function() {
 };
 
 
-class MarkDown extends HTMLElement {
+class MarkDown extends DataroomElement {
   connectedCallback(){
     this.init();
   }
 
   async init(){
+    this.dtrm_id = this.getAttribute('dtrm-id');
     if(this.innerText.length > 0){
       this.render(this.innerText);
-    } else if (!this.id){
+    } else if (!this.dtrm_id || this.dtrm_id === null){
       const error = 'Either content or an ID are required for the mark-down element';
       this.innerHTML = `<error>${error}</error>`;
       return console.error(error);
     } else {
-      const data = await getNotebookPage(this.id);
+      const data = await getNotebookPage(this.dtrm_id);
       this.render(data.content);
     }
   }

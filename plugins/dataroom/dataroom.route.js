@@ -9,12 +9,14 @@ function watchPlugins(ws){
     ignored: /(^|[\/\\])\../, // ignore dotfiles
     persistent: true,
     ignoreInitial: true, // don't call fileUpdated on the initial scan
-    awaitWriteFinish: true // wait for the file to be fully written before calling fileUpdated
+    awaitWriteFinish: true, // wait for the file to be fully written before calling fileUpdated
+    interval: 100
+
   });
   plugins.on('change', (filePath) => {
     ws.send(JSON.stringify({
       type: 'plugin-changed',
-      msg: filePath
+      msg: filePath.split('/').slice(-2)
     }));
   });
 
@@ -22,7 +24,7 @@ function watchPlugins(ws){
   plugins.on('add', (filePath) => {
     ws.send(JSON.stringify({
       type: 'plugin-added',
-      msg: filePath
+      msg: filePath.split('/').slice(-2)
     }));
   });
 
@@ -30,7 +32,7 @@ function watchPlugins(ws){
   plugins.on('unlink', (filePath) => {
     ws.send(JSON.stringify({
       type: 'plugin-deleted',
-      msg: filePath
+      msg: filePath.split('/').slice(-2)
     }));
   });
 
@@ -49,7 +51,9 @@ function functionWatchNotebooks(ws){
     ignored: /(^|[\/\\])\../, // ignore dotfiles
     persistent: true,
     ignoreInitial: true, // don't call fileUpdated on the initial scan
-    awaitWriteFinish: true // wait for the file to be fully written before calling fileUpdated
+    awaitWriteFinish: true, // wait for the file to be fully written before calling fileUpdated
+    interval: 100
+
   });
   notebook.on('change', (filePath) => {
     ws.send(JSON.stringify({

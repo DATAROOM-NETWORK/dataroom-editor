@@ -9,8 +9,6 @@
 # file-clerk.md
 
 
-
-
 ## Get notebook page example
 
 ```js

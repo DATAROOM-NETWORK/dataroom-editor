@@ -17,14 +17,14 @@ function ParseXML(xmlText){
     const xmlDoc = parser.parseFromString(xmlText, 'application/xml');
 
     // Check if required elements exist
-    const channelTitleElement = xmlDoc.querySelector('channel title');
+    const channelTitleElement = xmlDoc.querySelector('title');
     if (!channelTitleElement) {
       throw new Error('Missing required "channel title" element');
     }
 
     const feedTitle = channelTitleElement.textContent;
     
-    const feedItems = Array.from(xmlDoc.querySelectorAll('item')).map(item => {
+    const feedItems = Array.from(xmlDoc.querySelectorAll('entry')).map(item => {
       return {
         title: item.querySelector('title')?.textContent || 'No title available',
         link: item.querySelector('link')?.textContent || '#',

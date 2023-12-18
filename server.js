@@ -70,7 +70,6 @@ app.use(express.json());
 app.use('/', express.static('./components')); // Serve files in the 'components' directory at the root URL
 
 app.use('/components', express.static('./components')); // Serve files in the 'components' directory under '/components' URL
-app.use('/', express.static('./docs')); // Serve files in the 'components' directory under '/components' URL
 
 app.use("/", express.static(__dirname + '/notebooks')); // Serve files in the 'assets' directory at the root URL
 app.use("/index.css", express.static(__dirname + '/index.css')); // Serve 'index.css' file at '/index.css' URL
@@ -81,7 +80,7 @@ const routes = require('./routes.js')(app);
 
 // Serve LNSY Edit on first hit
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'components', 'lnsy-edit', 'lnsy-edit.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Start the server and listen on the specified PORT

@@ -10,7 +10,7 @@ class NotebookPages extends HTMLElement {
   connectedCallback(){
     const details = document.createElement('details');
     const summary = document.createElement('summary');
-    summary.innerText = ' ';
+    summary.innerText = 'Files';
     details.appendChild(summary);
     this.ul = document.createElement('ul');
     details.appendChild(this.ul);
@@ -21,15 +21,7 @@ class NotebookPages extends HTMLElement {
     const data = await this.fetchData();
     data.forEach(d => {
       const item = document.createElement('li');
-      item.innerText = d; 
-      item.addEventListener('click', (e) => {
-        const select_notebook = new CustomEvent("notebook-page-selected", {
-          detail:d
-        });
-
-        this.dispatchEvent(select_notebook)
-       
-      });
+      item.innerHTML = `<hash-tag>${d}</hash-tag>`; 
       this.ul.appendChild(item);
     })
   }

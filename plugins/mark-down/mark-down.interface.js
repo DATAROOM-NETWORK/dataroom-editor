@@ -34,11 +34,10 @@ String.prototype.removeFrontMatter = function() {
   return removeFrontMatter(this);
 };
 
-
 class MarkDown extends DataroomElement {
 
   async initialize(){
-    console.log('initializing markdown interface')
+    this.innerHTML = 'loading...'
     this.dtrm_id = this.getAttribute('dtrm-id');
     if(this.innerText.length > 0){
       this.render(this.innerText);
@@ -47,12 +46,25 @@ class MarkDown extends DataroomElement {
       this.innerHTML = `<error>${error}</error>`;
       return console.error(error);
     } else {
-      const data = await this.getFile(this.dtrm_id);
-      this.render(data.content);
+      this.loadMDfromID(this.dtrm_id);
     }
+    setTimeout(() => {
+      this.dtrmEvent('loaded')
+    }, 100)
+  }
+
+  async updateFile(){
+    console.log(this.dtrm_id);
+    this.loadMDfromID(this.dtrm_id);
+  }
+
+  async loadMDfromID(dtrm_id){
+    const data = await this.getFile(dtrm_id);
+    this.render(data.content);
   }
 
   render(content){
+    this.innerHTML = "loading...";
     const parsed_content = content.removeFrontMatter();
     const html_content = md.render(parsed_content)
       .wrapHashtags()
@@ -61,8 +73,8 @@ class MarkDown extends DataroomElement {
     [...this.querySelectorAll('code')].forEach(codeblock => {
       hljs.highlightElement(codeblock);
     })
-
   }
+
 }
 
-customElements.define('mark-down', MarkDown)
+customElements.define('mark-down', MarkDown);

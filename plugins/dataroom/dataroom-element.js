@@ -14,11 +14,6 @@ export class DataroomElement extends HTMLElement {
   connectedCallback(){
     this.initialize();
     this.updateFile();
-    const dtrm_server = document.querySelector('dataroom-server');
-    dtrm_server.addEventListener(this.dtrm_id, (e) => {
-      console.log('updating', this.dtrm_id);
-      this.updateFile();
-    });
   }
 
   async updateFile(){
@@ -66,6 +61,7 @@ export class DataroomElement extends HTMLElement {
   }
 
   async getFile(dtrm_id){
+    if(dtrm_id === null || !dtrm_id) return
     try {
       const response = await fetch('/load-notebook-page', {
         method: 'POST',
@@ -97,5 +93,24 @@ export class DataroomElement extends HTMLElement {
     });
 
     this.dispatchEvent(dtrmEvent);
+  }
+
+  static get observedAttributes() {
+    return ['dtrm-id'];
+  }
+
+  attributeChangedCallback(name, old_value, new_value){
+    switch(name){
+    case "dtrm-id":
+      this.dtrm_id = new_value;
+      this.updateFile(new_value);
+      
+      const dtrm_server = document.querySelector('dataroom-server');
+      dtrm_server.addEventListener(this.dtrm_id, (e) => {
+        this.updateFile();
+      });
+
+      default:
+    }
   }
 }

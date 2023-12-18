@@ -13,8 +13,40 @@
 
 </head>
 <body>
-<h1>DATAROOM</h1>
+<details class="splash-menu">
+  <summary> </summary>
+  <dataroom-router></dataroom-router>
   <dataroom-server dtrm-id="dataroom-server.md"></dataroom-server>
+  <notebook-pages></notebook-pages>
+</details>
+  
   <mark-down dtrm-id="index.md"></mark-down>
+  <script>
+    window.addEventListener('load', async function(){
+      const router = document.querySelector('dataroom-router');
+      const values = router.getURLValues();
+      const markdown = document.querySelector('mark-down');
+      markdown.addEventListener('loaded', ()=>{
+        if(values["dtrm-id"]){
+          markdown
+            .setAttribute('dtrm-id', values["dtrm-id"]);
+        }
+      });
+
+      router.addEventListener('paramsChanged', (e) => {
+        const values = router.getURLValues();
+        const markdown = document.querySelector('mark-down');
+        if(values["dtrm-id"]){
+          markdown
+            .setAttribute('dtrm-id', values["dtrm-id"]);
+        } else {
+          markdown
+            .setAttribute('dtrm-id', 'index.md');
+        }
+
+      });
+    });
+  </script>
+
 </body>
 </html>

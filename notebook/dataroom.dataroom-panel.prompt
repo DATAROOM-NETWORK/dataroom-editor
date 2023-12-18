@@ -1,3 +1,5 @@
+```js
+
 import { DataroomElement } from './dataroom-element.js';
 
 class DataroomPanel extends DataroomElement {
@@ -78,4 +80,6 @@ class DataroomPanel extends DataroomElement {
   }
 }
 
-customElements.define('dataroom-panel', DataroomPanel)
+customElements.define('dataroom-panel', DataroomPanel);
+
+```

@@ -16,3 +16,4 @@
 @import "./plugins/mark-down/mark-down.interface.css";
 @import "./plugins/layouts/layouts.css";
 @import "./plugins/helpers/helpers.css";
+@import "./plugins/editor/editor.css";

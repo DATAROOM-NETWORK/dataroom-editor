@@ -45,7 +45,6 @@ if (!PORT) {
 // Share it as a global variable
 function getLocalIpAddress() {
   const interfaces = os.networkInterfaces();
-  
   // Iterate over network interfaces
   for (const key in interfaces) {
     for (const iface of interfaces[key]) {
@@ -68,12 +67,16 @@ app.use('/plugins', express.static(__dirname + '/plugins')); // Serve files in t
 app.use("/index.css", express.static(__dirname + '/index.css')); // Serve 'index.css' file at '/index.css' URL
 app.use("/index.js", express.static(__dirname + '/index.js')); // Serve 'index.js' file at '/index.js' URL
 
-
 const routes = require('./routes.js')(app);
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(global.root_directory, 'index.html'));
 });
+
+app.get('/editor', (req, res) => {
+  res.sendFile(path.join(global.root_directory, 'plugins','editor','editor.html'));
+});
+
 
 // Start the server and listen on the specified PORT
 app.listen(PORT, () => {

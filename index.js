@@ -13,3 +13,4 @@ import "./plugins/file-clerk/file-clerk.interface.js";
 import "./plugins/mark-down/mark-down.interface.js";
 import "./plugins/layouts/layouts.js";
 import "./plugins/helpers/helpers.js";
+import "./plugins/editor/editor.js";

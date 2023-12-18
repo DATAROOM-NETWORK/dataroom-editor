@@ -12,3 +12,4 @@ import "./plugins/dataroom/dataroom.interface.js";
 import "./plugins/file-clerk/file-clerk.interface.js";
 import "./plugins/mark-down/mark-down.interface.js";
 import "./plugins/layouts/layouts.js";
+import "./plugins/helpers/helpers.js";

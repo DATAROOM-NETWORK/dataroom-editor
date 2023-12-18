@@ -19,35 +19,10 @@ String.prototype.wrapHashtags = function() {
   return wrapHashtags(this);
 };
 
-
-function findNearestNotebookPage(){
-  const tagName = 'notebook-page'.toUpperCase();
-  while(element){
-    if(element.tagName = tagName){
-      return element;
-    }
-    element = element.parentNode;
-  }
-
-}
-
-
 class HashTag extends HTMLElement {
   connectedCallback(){
-    this.addEventListener('click', (e) => {
-      console.log(this.innerText)
-      // Create a new custom event with a specific type (e.g., "customEvent") and a detail property
-    const hash_tag_clicked = new CustomEvent("hash-tag-clicked", {
-        detail: {
-            hash_tag_id: this.innerText
-        }
-    });
-
-    // Dispatch the custom event on a target element or the document
-    // For example, dispatching on the document:
-    this.dispatchEvent(hash_tag_clicked);
-
-    });
+    const hash_id = this.innerText; 
+    this.innerHTML = `<a href="${window.location.href}?&file-id=${hash_id}">${hash_id}</a>`
   }
 }
 

@@ -88,15 +88,6 @@ export class DataroomElement extends HTMLElement {
       console.error('Error querying server');
       return err;
     }
-
-  }
-
-  getAllHashTags(){
-
-  }
-
-  getAllReferences(){
-
   }
 
   // Emits a custom event

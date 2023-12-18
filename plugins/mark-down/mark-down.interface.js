@@ -36,11 +36,9 @@ String.prototype.removeFrontMatter = function() {
 
 
 class MarkDown extends DataroomElement {
-  connectedCallback(){
-    this.init();
-  }
 
-  async init(){
+  async initialize(){
+    console.log('initializing markdown interface')
     this.dtrm_id = this.getAttribute('dtrm-id');
     if(this.innerText.length > 0){
       this.render(this.innerText);
@@ -49,7 +47,7 @@ class MarkDown extends DataroomElement {
       this.innerHTML = `<error>${error}</error>`;
       return console.error(error);
     } else {
-      const data = await getNotebookPage(this.dtrm_id);
+      const data = await this.getFile(this.dtrm_id);
       this.render(data.content);
     }
   }

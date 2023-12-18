@@ -2,8 +2,8 @@ import { DataroomElement } from './dataroom-element.js';
 
 class WebSocketServer extends DataroomElement {
   async initialize(){
+    this.innerHTML = " ";
     const details = document.createElement('details');
-    details.setAttribute('open', true);
     const summary = document.createElement('summary');
     summary.innerText = 'DATAROOM SERVER';
     details.appendChild(summary);

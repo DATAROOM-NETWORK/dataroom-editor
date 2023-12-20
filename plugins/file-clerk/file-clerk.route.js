@@ -147,6 +147,31 @@ module.exports = function (app) {
     });
   });
 
+  app.get('/get-keys', async function (req, res) {
+    const keysFilePath = path.join(__dirname, '../../.keys');
+
+    try {
+      const content = await fsPromises.readFile(keysFilePath, 'utf8');
+      const keysArray = content.trim().split('\n');
+      const keysObject = {};
+
+      keysArray.forEach((line) => {
+        const [key, value] = line.split('=');
+        keysObject[key.trim()] = value.trim();
+      });
+
+      res.json({ keys: keysObject });
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        // ENOENT error code indicates that the file does not exist
+        res.json({ keys: {} }); // Return an empty object if the file doesn't exist
+      } else {
+        res.status(500).json({ error: 'Error reading or parsing keys file' });
+      }
+    }
+  });
+
+
 
    
 

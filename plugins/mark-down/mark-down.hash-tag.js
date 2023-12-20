@@ -21,8 +21,10 @@ String.prototype.wrapHashtags = function() {
 
 class HashTag extends HTMLElement {
   connectedCallback(){
-    const hash_id = this.innerText; 
-    this.innerHTML = `<a href="${window.location.origin}${window.location.pathname}/?&dtrm-id=${hash_id}">${hash_id}</a>`
+    console.log(this);
+    const hash_id = this.innerText;
+    console.log(hash_id);
+    this.innerHTML = `<a href="${window.location.origin}${window.location.pathname}?&dtrm-id=${hash_id}">${hash_id}</a>`
   }
 }
 

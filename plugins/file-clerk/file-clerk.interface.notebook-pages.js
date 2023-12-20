@@ -21,7 +21,9 @@ class NotebookPages extends HTMLElement {
     const data = await this.fetchData();
     data.forEach(d => {
       const item = document.createElement('li');
-      item.innerHTML = `<hash-tag>${d}</hash-tag>`; 
+      const hash_tag = document.createElement('hash-tag');
+      hash_tag.innerText = d;
+      item.appendChild(hash_tag);
       this.ul.appendChild(item);
     })
   }

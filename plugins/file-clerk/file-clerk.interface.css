@@ -1,0 +1,14 @@
+/*
+  
+  FILE CLERK
+
+  
+ */
+
+notebook-pages {
+  display: block;
+}
+
+notebook-pages li {
+  cursor: pointer;
+}

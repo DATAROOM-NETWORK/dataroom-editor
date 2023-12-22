@@ -24,28 +24,27 @@
 
 */
 
-// Import required modules
+// require modules here
 const express = require('express');  // Express.js framework for building web applications
 const app = express();              // Create an instance of the Express application
 const server = require('http').Server(app);  // Create an HTTP server using the Express app
 const path = require('path');
 const os = require('os');
 
-
 // Load environment variables from a .env file if present
 const dotenv = require("dotenv");
 dotenv.config();
 
-// Set the PORT for the server
+// Set the PORT for the server from the .env file
 let PORT = process.env.PORT; // Try to get the PORT from environment variables
 if (!PORT) {
   PORT = 3000; // If PORT is not defined, default to 3000
 }
 
 // Get the local IP Address
+// Share it as a global variable
 function getLocalIpAddress() {
   const interfaces = os.networkInterfaces();
-  
   // Iterate over network interfaces
   for (const key in interfaces) {
     for (const iface of interfaces[key]) {
@@ -60,33 +59,26 @@ function getLocalIpAddress() {
   return null;
 }
 
+global.ip_address = getLocalIpAddress();
+global.root_directory = __dirname;
 
-// Configure middleware to handle JSON data in requests
 app.use(express.json());
-
-// Serve static files from the specified directories
-// app.use('/', express.static('./notebook')); // Serve files in the 'components' directory at the root URL
-
-app.use('/', express.static('./components')); // Serve files in the 'components' directory at the root URL
-
-app.use('/components', express.static('./components')); // Serve files in the 'components' directory under '/components' URL
-app.use('/', express.static('./docs')); // Serve files in the 'components' directory under '/components' URL
-
-app.use("/", express.static(__dirname + '/notebooks')); // Serve files in the 'assets' directory at the root URL
+app.use('/plugins', express.static(__dirname + '/plugins')); // Serve files in the 'components' directory at the root URL
 app.use("/index.css", express.static(__dirname + '/index.css')); // Serve 'index.css' file at '/index.css' URL
 app.use("/index.js", express.static(__dirname + '/index.js')); // Serve 'index.js' file at '/index.js' URL
 
-// Import and use routes defined in the 'routes.js' module, passing the Express app as a parameter
 const routes = require('./routes.js')(app);
 
-// Serve LNSY Edit on first hit
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'components', 'lnsy-edit', 'lnsy-edit.html'));
+  res.sendFile(path.join(global.root_directory, 'index.html'));
 });
+
+app.get('/editor', (req, res) => {
+  res.sendFile(path.join(global.root_directory, 'plugins','editor','editor.html'));
+});
+
 
 // Start the server and listen on the specified PORT
 app.listen(PORT, () => {
-  const ipAddress = getLocalIpAddress();
-
-  console.log(`Server listening on port ${ipAddress}/${PORT}`);
+  console.log(`Server listening on port http://${global.ip_address}:${PORT} and serving ${global.root_directory}`);
 });

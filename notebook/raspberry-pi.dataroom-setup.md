@@ -1,0 +1,1 @@
+curl -sL https://deb.nodesource.com/setup_18.x — Node.js 18 LTS "Hydrogen" | sudo bash -

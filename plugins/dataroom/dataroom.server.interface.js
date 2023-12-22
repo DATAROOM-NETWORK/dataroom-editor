@@ -3,14 +3,18 @@ import { DataroomElement } from './dataroom-element.js';
 class WebSocketServer extends DataroomElement {
   async initialize(){
     this.innerHTML = " ";
-    const details = document.createElement('details');
-    const summary = document.createElement('summary');
-    summary.innerText = 'DATAROOM SERVER';
-    details.appendChild(summary);
-    this.messageQueu = document.createElement('ul');
-    details.appendChild(this.messageQueu);
-    this.appendChild(details);
-    await this.connectToServer();
+    this.verbose = this.getAttribute('verbose');
+    if(this.verbose !== null){
+      this.verbose = true;
+      const details = document.createElement('details');
+      const summary = document.createElement('summary');
+      summary.innerText = 'DATAROOM SERVER';
+      details.appendChild(summary);
+      this.messageQueu = document.createElement('ul');
+      details.appendChild(this.messageQueu);
+      this.appendChild(details);
+    }
+     await this.connectToServer();
   }
 
   // Connect to websocket server
@@ -32,7 +36,7 @@ class WebSocketServer extends DataroomElement {
   handleDisconnect(){
     const new_message = document.createElement('li');
     new_message.innerText = `Server disconnected at ${Date.now()}`
-    this.messageQueu.appendChild(new_message);
+    if(this.verbose){this.messageQueu.appendChild(new_message)};
     this.attemptToReconnect();
     this.dtrmEvent('server-disconnected');
   }
@@ -49,8 +53,10 @@ class WebSocketServer extends DataroomElement {
 
   handleConnect(){
     const new_message = document.createElement('li');
-    new_message.innerText = `Server connected at ${Date.now()}`
-    this.messageQueu.appendChild(new_message);
+    if(this.verbose){
+      new_message.innerText = `Server connected at ${Date.now()}`
+      this.messageQueu.appendChild(new_message);
+    }
     this.dtrmEvent('server-connected');
   }
 
@@ -67,8 +73,10 @@ class WebSocketServer extends DataroomElement {
     case "error":
       console.error(data);
     }
-    new_message.innerText = data;
-    this.messageQueu.appendChild(new_message);
+    if(this.verbose){
+      new_message.innerText = data;
+      this.messageQueu.appendChild(new_message);
+    }
   }
 }
 

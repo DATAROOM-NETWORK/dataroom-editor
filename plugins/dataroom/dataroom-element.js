@@ -96,6 +96,35 @@ export class DataroomElement extends HTMLElement {
     }
   }
 
+  async appendToFile(content, fileId){
+    if(!fileId || fileId === null){
+      fileId = this.getAttribute('dtrm-id');
+    }
+    try {
+      const response = await fetch('/append-to-file', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: content,
+          'file-id': fileId,
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        alert(result.message);
+      } else {
+        const error = await response.json();
+        alert(`Error: ${error.error}`);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('An error occurred while making the request');
+    }
+  }
+
   // Emits a custom event
   dtrmEvent(name, detail = {}){
     const dtrmEvent = new CustomEvent(name, {

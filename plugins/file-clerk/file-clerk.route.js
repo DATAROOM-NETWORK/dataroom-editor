@@ -147,6 +147,28 @@ module.exports = function (app) {
     });
   });
 
+  /*
+    Append to a file
+  */
+  app.post('/append-to-file', async function (req, res) {
+    if (!req.body.content || !req.body["file-id"]) {
+      return res.status(400).json({ error: 'Both content and file-id are required in the request body' });
+    }
+    
+    const file_id = req.body["file-id"];
+    // Construct the file path based on the provided file_path
+    const file_path = path.join(global.root_directory, 'notebook', file_id);
+
+    // Append the content to the file
+    fs.appendFile(file_path, req.body.content, 'utf8', (err) => {
+      if (err) {
+        return res.status(500).json({ error: 'Error appending to the file' });
+      }
+      res.json({ message: 'Content appended to the file successfully' });
+    });
+  });
+
+
   app.get('/get-keys', async function (req, res) {
     const keysFilePath = path.join(__dirname, '../../.keys');
 

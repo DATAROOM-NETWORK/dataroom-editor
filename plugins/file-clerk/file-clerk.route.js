@@ -126,6 +126,29 @@ module.exports = function (app) {
     }
   });
 
+  /*
+    Create a file
+
+   */
+  app.post('/create-file', async function (req, res) {
+    if (!req.body.content || !req.body["file-id"]) {
+        return res.status(400).json({ error: 'Both content and file-id are required in the request body' });
+    }
+    const file_id = req.body["file-id"];
+    // Construct the file path based on the provided file_path
+    const file_path = path.join(global.root_directory, 'notebook',  file_id );
+    // Write the content to the file
+    
+    let new_file_content = generateNewFile(file_id);
+    new_file_content += req.body.content;
+    fs.writeFile(file_path, new_file_content, 'utf8', (err) => {
+      if (err) {
+          return res.status(500).json({ error: 'Error saving the file' });
+      }
+      res.json({content:new_file_content});
+    });
+  });
+
 
   /*
     Save a file

@@ -8,28 +8,40 @@
  */
 
 export class DataroomElement extends HTMLElement {
-  constructor(){
-    super();
-    this.dtrm_id = this.getAttribute('dtrm-id');
-    if(this.dtrm_id === null){
-      return console.error('dtrm-id required');
-    }
-    this.container = document.createElement('dataroom-container');
-    this.appendChild(this.container);
-  }
 
   connectedCallback(){
+    this.dtrm_id = this.getAttribute('dtrm-id');
+
+    if(this.dtrm_id === null){
+      console.error('dtrm-id required');
+      this.innerText = 'dtrm-id attribute required'
+      return
+    }
+
     this.initialize();
-    this.updateFile();
     const dtrm_server = document.querySelector('dataroom-server');
     dtrm_server.addEventListener(this.dtrm_id, (e) => {
       this.updateFile();
     });
   }
 
+  disconnectedCallback(){
+    console.log(this, "disconnecting");
+  }
+
+
+  /*
+  
+    UPDATE FILE
+
+    if you want a different action
+    when the file updates override
+    this function in your subclass
+
+   */
   async updateFile(){
     const { content } = await this.getFile(this.dtrm_id);
-    this.container.innerHTML = content;
+    this.innerHTML = content;
   }
 
   async initialize(){
@@ -70,8 +82,59 @@ export class DataroomElement extends HTMLElement {
     }
   }
 
-  async getFile(dtrm_id){
-    if(dtrm_id === null || !dtrm_id) return
+  async createFile(){
+    try {
+      const response = await fetch('/create-file', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          'file-id': this.dtrm_id,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert('File saved successfully');
+      } else {
+        alert(`Error: ${data.error}`);
+      }
+    } catch (error) {
+      console.error('Error saving file:', error);
+      alert('Error saving file. Please try again.');
+    }
+  }
+
+  async saveFile(file_content){
+    try {
+      const response = await fetch('/save-file', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          'file-id': this.dtrm_id,
+          content: file_content,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert('File saved successfully');
+      } else {
+        alert(`Error: ${data.error}`);
+      }
+    } catch (error) {
+      console.error('Error saving file:', error);
+      alert('Error saving file. Please try again.');
+    }
+  }
+
+  async getFile(){
+    if(this.dtrm_id === null || !this.dtrm_id) return
     try {
       const response = await fetch('/load-notebook-page', {
         method: 'POST',
@@ -79,7 +142,7 @@ export class DataroomElement extends HTMLElement {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          'file-id': dtrm_id,
+          'file-id': this.dtrm_id,
         }),
       });
 
@@ -96,10 +159,9 @@ export class DataroomElement extends HTMLElement {
     }
   }
 
-  async appendToFile(content, fileId){
-    if(!fileId || fileId === null){
-      fileId = this.getAttribute('dtrm-id');
-    }
+  async appendToFile(content){
+    if(this.dtrm_id === null || !this.dtrm_id) return
+
     try {
       const response = await fetch('/append-to-file', {
         method: 'POST',
@@ -108,16 +170,15 @@ export class DataroomElement extends HTMLElement {
         },
         body: JSON.stringify({
           content: content,
-          'file-id': fileId,
+          'file-id': this.dtrm_id,
         }),
       });
 
       if (response.ok) {
         const result = await response.json();
-        alert(result.message);
+        return result
       } else {
         const error = await response.json();
-        alert(`Error: ${error.error}`);
       }
     } catch (error) {
       console.error('Error:', error);

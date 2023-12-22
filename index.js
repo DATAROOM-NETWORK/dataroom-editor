@@ -10,7 +10,9 @@
     npm run build. 
 
 */
+
 import "./plugins/helpers/index.js";
 import "./plugins/dataroom/dataroom.interface.js";
 import "./plugins/file-clerk/file-clerk.interface.js";
 import "./plugins/mark-down/mark-down.interface.js";
+import "./plugins/LLM/llm-prompt.interface.js";

@@ -6,7 +6,7 @@
 
  */
 
-import {DataroomElement} from "../dataroom/dataroom-element.js";
+import { DataroomElement } from "../dataroom/dataroom-element.js";
 import "./vendor/markdown-it.min.js";
 import { hljs } from "./vendor/highlight/highlight.min.js";
 const md = markdownit();
@@ -48,8 +48,9 @@ class MarkDown extends DataroomElement {
     } else {
       this.loadMDfromID(this.dtrm_id);
     }
+    this.updateFile();
     setTimeout(() => {
-      this.dtrmEvent('loaded')
+      this.dtrmEvent('loaded');
     }, 100);
   }
 

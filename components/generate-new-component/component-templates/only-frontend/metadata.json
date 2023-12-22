@@ -1,5 +1,0 @@
-{
-  "name":"${ComponentName}",
-  "id":"${component-id}",
-  "description": "${ComponentDescription}"
-}

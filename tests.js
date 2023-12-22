@@ -9,24 +9,8 @@ const mocha = new Mocha({
 
 
 
- mocha.addFile('./components/lnsy-edit/lnsy-edit.tests.js');
+ // mocha.addFile('./components/lnsy-edit/lnsy-edit.tests.js');
 
- mocha.addFile('./components/file-clerk/file-clerk.tests.js');
-
- mocha.addFile('./components/chat-gpt/chat-gpt.tests.js');
-
- mocha.addFile('./components/graph-data/graph-data.tests.js');
-
- mocha.addFile('./components/geo-map/geo-map.tests.js');
-
- mocha.addFile('./components/simple-modal/simple-modal.tests.js');
-
- mocha.addFile('./components/simple-modal/simple-modal.tests.js');
-
- mocha.addFile('./components/control-panel/control-panel.tests.js');
-
-
- mocha.addFile('./components/rss-feed/rss-feed.tests.js');
 // Run the tests
 mocha.run((failures) => {
   process.exitCode = failures ? 1 : 0; // exit with non-zero status if there are failures

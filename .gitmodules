@@ -1,0 +1,3 @@
+[submodule "plugins/LNSY-EDIT"]
+	path = plugins/LNSY-EDIT
+	url = https://github.com/lnsy-dev/LNSY-EDIT.git

@@ -6,10 +6,6 @@
   "scripts": {
     "start": "nodemon server.js",
     "test": "mocha tests.js",
-    "new-component": "node ./dev-components/generate-component/generate-component-server.js",
-    "delete-component": "node ./components/remove-component/remove-component-server.js",
-    "build": "webpack",
-    "index": "node ./components/file-clerk/index.js"
   },
   "repository": {
     "type": "git",

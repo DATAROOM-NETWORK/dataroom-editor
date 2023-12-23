@@ -1,0 +1,21 @@
+llm-prompt {
+  display: block;
+  width: 40em;
+  margin: auto;
+}
+
+
+llm-prompt form {
+  margin: auto;
+  margin-top: 1em;
+  display: flex;
+  width: calc(100% - 2em);
+}
+
+llm-prompt form input {
+  flex: 1 0 auto; /* this will make the text input take up all available space */
+}
+
+llm-prompt form input[type="submit"] {
+  flex: 0 1 auto;
+}

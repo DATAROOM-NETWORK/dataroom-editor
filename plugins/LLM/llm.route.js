@@ -3,6 +3,8 @@ module.exports = function (app) {
 
     const request_data = req.body.content;
 
+    console.log(request_data);
+
     // Building the payload for the OpenAI API
     const openaiPayload = {
       "model": "gpt-3.5-turbo-1106",
@@ -33,7 +35,6 @@ module.exports = function (app) {
       if (response.ok) {
         // Parsing the response JSON
         const data = await response.json();
-
         // Sending the retrieved data as a JSON response
         res.json(data);
       } else {

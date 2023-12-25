@@ -1,18 +1,14 @@
+const  HANS  = require('./role.js');
+
 module.exports = function (app) {
   app.post('/query-llm', async function (req, res) {
-
+    
     const request_data = req.body.content;
-
-    console.log(request_data);
-
     // Building the payload for the OpenAI API
     const openaiPayload = {
       "model": "gpt-3.5-turbo-1106",
       "messages": [
-        {
-          "role": "system",
-          "content": "You are a helpful assistant named hans"
-        },
+        HANS,
         {
           "role": "user",
           "content": request_data

@@ -41,9 +41,12 @@
   },
   "dependencies": {
     "dotenv": "^16.3.1",
+    "highlight.js": "^11.9.0",
     "http": "^0.0.1-security",
     "https-pem": "^3.0.0",
+    "markdown-it": "^14.0.0",
     "marked": "^10.0.0",
-    "openai": "^4.20.1"
+    "openai": "^4.20.1",
+    "ws": "^8.15.1"
   }
 }

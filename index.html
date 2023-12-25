@@ -16,10 +16,35 @@
 <body>
 <dataroom-server dtrm-id="dataroom.server.md"></dataroom-server>
 
+<div id="result_container"></div>
 
-<llm-prompt dtrm-id="dataroom-promp.form-styling.prompt">
-  Hey Hans, I have a form tag with two inputs: a text input and a submit input. Can you give me CSS to make sure the text input is as wide as possible while the submit button is pushed to the right and the same size it is now? Feel free to use flexbox
-</llm-prompt>
+<script>
+const file_id = "index.md";
+fetch('/load-compiled-notebook-page', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({ "file-id": file_id })
+})
+.then(response => {
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return response.json();
+})
+.then(data => {
+  // Handle the successful response
+  result_container.innerHTML = data.content.html;
+  // Do something with the content
+})
+.catch(error => {
+  // Handle errors
+  console.error('There was a problem with the fetch operation:', error);
+});
 
+
+
+</script>
 </body>
 </html>

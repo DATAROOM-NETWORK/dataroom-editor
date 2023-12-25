@@ -30,12 +30,12 @@ class DataroomPrompt extends DataroomElement {
         this.container.innerText = 'No Prompt Found. No File Exists.'
       } else {
         this.prompt = this.content
-        this.content = '\n## Prompt\n' + this.prompt + '\n';
+        this.content = '\n\n## Prompt\n' + this.prompt + '\n\n';
         await this.getFile();
         await this.appendToFile(this.content);
         this.updateFile();
         const query_result = await this.queryLLM(this.prompt);
-        this.appendToFile("\n## Result \n\n" + query_result);
+        this.appendToFile("\n\n## Result \n\n" + query_result);
         this.updateFile();
         // this.innerText = query;
       }
@@ -44,7 +44,7 @@ class DataroomPrompt extends DataroomElement {
 
   async handleSubmit(value){
     console.log(value);
-    this.appendToFile(`\n--- \n## Prompt \n ${value}`);
+    this.appendToFile(`\n\n---\n\n## Prompt \n\n ${value}`);
     const new_file_content = await this.getFile();
     const query_result = await this.queryLLM(new_file_content.content);
     this.appendToFile(`\n## Result \n\n` + query_result);

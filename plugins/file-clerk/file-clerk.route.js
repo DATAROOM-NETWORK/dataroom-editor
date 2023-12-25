@@ -10,6 +10,27 @@
 const path = require('path');
 const fs = require('fs');
 const fsPromises = require('fs').promises;
+const markdownIt = require('markdown-it');
+const hljs = require('highlight.js'); // https://highlightjs.org
+
+
+const md = markdownIt({
+    html: true,
+    xhtmlOut: true,
+    breaks: true,
+    linkify: true,
+    typographer: true,
+    highlight: function (str, lang) {
+      if (lang && hljs.getLanguage(lang)) {
+        try {
+          return hljs.highlight(str, { language: lang }).value;
+        } catch (__) {}
+      }
+
+      return ''; // use external default escaping
+    }
+})
+
 
 function generateNewFile(file_id){
   return `---
@@ -25,6 +46,72 @@ function generateNewFile(file_id){
 `
 }
 
+async function wrapHashtags(text) {
+  const hashtagRegex = /(^|[^#\w])#([a-zA-Z0-9\-./]+)(?![^<>]*>)/g;
+  // Replace hashtags with <hash-tag>...</hash-tag>
+  const result = text.replace(hashtagRegex, '$1<hash-tag>$2</hash-tag>');
+  return result;
+
+};
+
+function removeFrontMatter(content) {
+    const yamlRegex = /^---\n([\s\S]*?)\n---/;
+    return content.replace(yamlRegex, '').trim();
+}
+
+
+async function processMarkdownString(text) {
+  const split_content = text.split('---');
+  const json_front_matter = JSON.parse(split_content[1]);
+  const markdown_content = split_content.slice(2).join('---');
+  const embedded = await embedLinks(markdown_content);
+  const hash_tags = await wrapHashtags(embedded);
+
+  const html_content = md.render(hash_tags);
+
+  return {
+    metadata: json_front_matter,
+    markdown: hash_tags,
+    html: html_content
+  };
+}
+
+
+async function embedLinks(text) {
+  const regex = /@([a-z.-]+-)*[a-z.]+/g;
+  const matches = text.match(regex);
+
+  if (!matches) {
+    return text;
+  }
+
+  const promises = matches.map(async (match) => {
+    const file_id = match.slice(1);
+    try {
+      const file_path = path.join(global.root_directory, 'notebook', file_id);
+      const fileContent = await fsPromises.readFile(file_path, 'utf8');
+      const fetched_data = removeFrontMatter(fileContent);
+      return { match, fetched_data };
+    } catch (error) {
+      const fetched_data = `${file_id} to come`;
+      return { match, fetched_data };
+    }
+  });
+
+  const results = await Promise.all(promises);
+
+  let updated_string = text;
+  results.forEach(({ match, fetched_data }) => {
+    updated_string = updated_string.replace(match, fetched_data);
+  });
+
+  return updated_string;
+}
+
+async function fetchNotebookPage(file_path){
+  const content = await fsPromises.readFile(file_path, 'utf8');
+  return await processMarkdownString(content)
+}
 
 module.exports = function (app) {
 
@@ -80,6 +167,19 @@ module.exports = function (app) {
     }
   });
 
+  app.post('/load-compiled-notebook-page', async function (req, res) {
+    if(!req.body["file-id"]){
+      return res.status(400).json({ error: 'file-id is required in the request body' });
+    }
+    const file_id = req.body["file-id"];
+    const file_path = path.join(global.root_directory, 'notebook', file_id);
+    try {
+      const content = await fetchNotebookPage(file_path)
+      res.json({ content });
+    } catch (err) {
+      res.error(500);
+    }
+  });
   /*
     
     Check if a File Exists

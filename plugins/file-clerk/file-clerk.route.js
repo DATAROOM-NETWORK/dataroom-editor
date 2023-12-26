@@ -31,6 +31,14 @@ const md = markdownIt({
     }
 })
 
+function generateNewHeader(file_id){
+    return {
+    "file-id":file_id,
+    "date-created":new Date(),
+    "last-updated":new Date()
+  }
+
+}
 
 function generateNewFile(file_id){
   return `---
@@ -47,7 +55,7 @@ function generateNewFile(file_id){
 }
 
 async function wrapHashtags(text) {
-  const hashtagRegex = /(^|[^#\w])#([a-zA-Z0-9\-./]+)(?![^<>]*>)/g;
+  const hashtagRegex = /(^|[^#!\w])#([a-zA-Z0-9\-./]+)(?![^<>]*>)/g;
   // Replace hashtags with <hash-tag>...</hash-tag>
   const result = text.replace(hashtagRegex, '$1<hash-tag>$2</hash-tag>');
   return result;
@@ -59,34 +67,19 @@ function removeFrontMatter(content) {
     return content.replace(yamlRegex, '').trim();
 }
 
-
-async function processMarkdownString(text) {
-  const split_content = text.split('---');
-  const json_front_matter = JSON.parse(split_content[1]);
-  const markdown_content = split_content.slice(2).join('---');
-  const embedded = await embedLinks(markdown_content);
-  const hash_tags = await wrapHashtags(embedded);
-
-  const html_content = md.render(hash_tags);
-
-  return {
-    metadata: json_front_matter,
-    markdown: hash_tags,
-    html: html_content
-  };
-}
-
-
 async function embedLinks(text) {
-  const regex = /@([a-z.-]+-)*[a-z.]+/g;
+  console.log(text)
+  const regex = /!#([a-z.-]+-)*[a-z.]+/g;
   const matches = text.match(regex);
+
+  console.log(matches)
 
   if (!matches) {
     return text;
   }
 
   const promises = matches.map(async (match) => {
-    const file_id = match.slice(1);
+    const file_id = match.slice(2);
     try {
       const file_path = path.join(global.root_directory, 'notebook', file_id);
       const fileContent = await fsPromises.readFile(file_path, 'utf8');
@@ -108,9 +101,33 @@ async function embedLinks(text) {
   return updated_string;
 }
 
-async function fetchNotebookPage(file_path){
+
+async function processMarkdownString(text, file_id) {
+  const split_content = text.split('---');
+  let json_front_matter = {}
+  try {
+    json_front_matter = JSON.parse(split_content[1]);
+  } catch(e){
+    json_front_matter = generateNewHeader(file_id);
+  }
+  
+  const markdown_content = removeFrontMatter(split_content.join('---'));
+  const embedded = await embedLinks(markdown_content);
+  const hash_tags = await wrapHashtags(embedded);
+
+  const html_content = md.render(hash_tags);
+
+  return {
+    metadata: json_front_matter,
+    markdown: hash_tags,
+    html: html_content
+  };
+}
+
+
+async function fetchNotebookPage(file_path, file_id){
   const content = await fsPromises.readFile(file_path, 'utf8');
-  return await processMarkdownString(content)
+  return await processMarkdownString(content, file_id)
 }
 
 module.exports = function (app) {
@@ -174,10 +191,11 @@ module.exports = function (app) {
     const file_id = req.body["file-id"];
     const file_path = path.join(global.root_directory, 'notebook', file_id);
     try {
-      const content = await fetchNotebookPage(file_path)
+      const content = await fetchNotebookPage(file_path, file_id)
       res.json({ content });
     } catch (err) {
-      res.error(500);
+      console.log(err);
+      res.status(500).json(err);
     }
   });
   /*

@@ -35,6 +35,7 @@ fetch('/load-compiled-notebook-page', {
 })
 .then(data => {
   // Handle the successful response
+  console.log(data.content.markdown);
   result_container.innerHTML = data.content.html;
   // Do something with the content
 })

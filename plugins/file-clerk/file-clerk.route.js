@@ -68,12 +68,8 @@ function removeFrontMatter(content) {
 }
 
 async function embedLinks(text) {
-  console.log(text)
   const regex = /!#([a-z.-]+-)*[a-z.]+/g;
   const matches = text.match(regex);
-
-  console.log(matches)
-
   if (!matches) {
     return text;
   }

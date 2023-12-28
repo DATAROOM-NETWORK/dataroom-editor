@@ -26,13 +26,14 @@ import { getNotebookPage } from '../file-clerk/file-clerk.interface.js';
 */
 
 function removeFrontMatter(content) {
+  try {
     const yamlRegex = /^---\n([\s\S]*?)\n---/;
     return content.replace(yamlRegex, '').trim();
+  } catch(e){
+    return content
+  }
 }
 
-String.prototype.removeFrontMatter = function() {
-  return removeFrontMatter(this);
-};
 
 class MarkDown extends DataroomElement {
 
@@ -64,15 +65,9 @@ class MarkDown extends DataroomElement {
   }
 
   render(content){
+    console.log(content);
     this.innerHTML = "loading...";
-    const parsed_content = content.removeFrontMatter();
-    const html_content = md.render(parsed_content)
-      .wrapHashtags()
-      .wrapLinks();
-    this.innerHTML = html_content;
-    [...this.querySelectorAll('code')].forEach(codeblock => {
-      hljs.highlightElement(codeblock);
-    })
+    this.innerHTML = content.html
   }
 
 }

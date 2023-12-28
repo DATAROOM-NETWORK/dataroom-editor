@@ -66,8 +66,6 @@ module.exports = function (app) {
       ]
     };
 
-    console.log(openaiPayload);
-
     try {
       // Making a request to the OpenAI API using the fetch API
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -78,8 +76,6 @@ module.exports = function (app) {
         },
         body: JSON.stringify(openaiPayload)
       });
-
-      console.log(response)
 
       // Checking if the request was successful (status code 2xx)
       if (response.ok) {

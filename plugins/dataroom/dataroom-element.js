@@ -136,7 +136,7 @@ export class DataroomElement extends HTMLElement {
   async getFile(){
     if(this.dtrm_id === null || !this.dtrm_id) return
     try {
-      const response = await fetch('/load-notebook-page', {
+      const response = await fetch('/load-compiled-notebook-page', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

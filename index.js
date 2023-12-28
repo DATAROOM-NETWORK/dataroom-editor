@@ -1,0 +1,1 @@
+import "./plugins/file-clerk/file-clerk.interface.js";

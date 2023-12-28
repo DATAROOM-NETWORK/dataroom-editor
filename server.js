@@ -5,6 +5,7 @@ import path, { join } from 'path';
 import os from 'os';
 import { execSync } from 'child_process';
 import dotenv from 'dotenv';
+import routes from './routes.js';
 
 const app = express();
 
@@ -62,6 +63,9 @@ app.get('/', (req, res) => {
 app.get('/login', (req, res) => {
   res.sendFile(path.join(global.root_directory, 'login.html'));
 });
+
+const routesInstance = routes(app);
+
 
 // Check if private-key.pem and certificate.pem files exist
 const privateKeyPath = join(rootDirectory, 'private-key.pem');

@@ -9,7 +9,7 @@ lerna-debug.log*
 .DS_Store
 .keys
 *.pem
-
+logins.json
 
 # do not push notebook
 notebook/
